@@ -1,0 +1,259 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#f5f2eb">
+  <meta name="description" content="2026년 12월과 2027년 1월, 도쿄 전시를 날짜와 동네, 관심 분야로 찾아보세요.">
+  <title>도쿄 미술관 전시회</title>
+  <style>
+    :root {
+      color-scheme: light;
+      overscroll-behavior-y: none;
+      --paper: #f5f2eb;
+      --ink: #202a27;
+      --muted: #64716b;
+      --line: #dce1d8;
+      --green: #245c4b;
+      --mint: #e2eee7;
+      --orange: #a64c2f;
+      --card: #fffefa;
+      font-family: -apple-system, BlinkMacSystemFont, "Hiragino Kaku Gothic ProN", "Yu Gothic", sans-serif;
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; background: var(--paper); color: var(--ink); overscroll-behavior-y: none; -webkit-overflow-scrolling: touch; }
+    button, input { font: inherit; }
+    a { color: inherit; }
+    .wrap { width: min(100% - 32px, 760px); margin: 0 auto; padding: 22px 0 56px; }
+    .topline { display: flex; justify-content: space-between; align-items: center; color: var(--green); font-size: 12px; font-weight: 750; letter-spacing: .12em; text-transform: uppercase; }
+    .season { color: var(--muted); font-size: 12px; letter-spacing: 0; }
+    h1 { margin: 22px 0 8px; max-width: 100%; font-family: Georgia, "Yu Mincho", serif; font-size: clamp(29px, 9vw, 66px); font-weight: 500; letter-spacing: -.07em; line-height: 1.15; white-space: nowrap; }
+    .intro { max-width: 510px; margin: 16px 0 24px; color: var(--muted); font-size: 15px; line-height: 1.7; }
+    .filters { padding: 20px; border: 1px solid var(--line); border-radius: 20px; background: rgba(255,254,250,.72); }
+    .filter-head { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-bottom: 17px; }
+    .filter-head h2 { margin: 0; font-size: 16px; }
+    .reset { border: 0; padding: 7px 0 7px 10px; background: transparent; color: var(--green); font-size: 13px; font-weight: 700; cursor: pointer; }
+    .group + .group { margin-top: 18px; }
+    .label { display: block; margin-bottom: 9px; font-size: 12px; font-weight: 750; letter-spacing: .04em; }
+    input[type="date"] { width: 100%; min-height: 48px; padding: 0 12px; border: 1px solid var(--line); border-radius: 11px; background: white; color: var(--ink); }
+    .chips { display: flex; flex-wrap: wrap; gap: 8px; }
+    .chip { position: relative; }
+    .chip input { position: absolute; width: 1px; height: 1px; opacity: 0; }
+    .chip span { display: inline-flex; min-height: 38px; align-items: center; padding: 0 13px; border: 1px solid var(--line); border-radius: 999px; background: white; color: #48564f; font-size: 13px; cursor: pointer; transition: .15s ease; }
+    .chip input:checked + span { border-color: var(--green); background: var(--green); color: white; }
+    .chip input:focus-visible + span, button:focus-visible, a:focus-visible, input:focus-visible { outline: 3px solid #e8a65c; outline-offset: 3px; }
+    .closed-toggle { display: flex; align-items: center; gap: 9px; margin-top: 17px; color: var(--muted); font-size: 13px; }
+    .closed-toggle input { width: 18px; height: 18px; accent-color: var(--green); }
+    .results-head { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; margin: 27px 2px 12px; }
+    .results-head h2 { margin: 0; font-size: 18px; }
+    #resultCount { color: var(--muted); font-size: 13px; }
+    .cards { display: grid; gap: 12px; }
+    .card { position: relative; overflow: hidden; padding: 19px; border: 1px solid var(--line); border-radius: 18px; background: var(--card); }
+    .card.closed { border-color: #e8c9ba; background: #fffaf7; }
+    .card-top { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+    .area { color: var(--green); font-size: 12px; font-weight: 800; letter-spacing: .05em; }
+    .status { flex: 0 0 auto; padding: 5px 9px; border-radius: 999px; background: var(--mint); color: var(--green); font-size: 11px; font-weight: 750; }
+    .status.closed-label { background: #f8e6dc; color: var(--orange); }
+    .card h3 { margin: 14px 0 3px; font-family: Georgia, "Yu Mincho", serif; font-size: 23px; font-weight: 600; line-height: 1.3; }
+    .title-ja { margin: 0; color: var(--muted); font-size: 13px; line-height: 1.5; }
+    .venue { margin: 11px 0 0; font-size: 13px; font-weight: 700; }
+    .tags { display: flex; flex-wrap: wrap; gap: 6px; margin: 13px 0 14px; }
+    .tag { padding: 5px 8px; border-radius: 6px; background: #f0efe9; color: #57635e; font-size: 11px; }
+    .details { display: grid; gap: 7px; padding-top: 13px; border-top: 1px solid #ecece5; }
+    .detail { display: grid; grid-template-columns: 82px 1fr; gap: 8px; font-size: 12px; line-height: 1.55; }
+    .detail dt { color: var(--muted); }
+    .detail dd { margin: 0; }
+    .detail.warning dd { color: var(--orange); font-weight: 650; }
+    .official { display: inline-flex; min-height: 42px; align-items: center; gap: 6px; margin-top: 15px; color: var(--green); font-size: 13px; font-weight: 800; text-decoration-thickness: 1px; text-underline-offset: 3px; }
+    .empty { padding: 32px 20px; border: 1px dashed #c9d1c8; border-radius: 18px; color: var(--muted); text-align: center; line-height: 1.65; }
+    .foot { margin: 21px 2px 0; color: var(--muted); font-size: 11px; line-height: 1.7; }
+    .scroll-mark { position: fixed; z-index: 1000; top: 0; right: 0; left: 0; display: flex; min-height: calc(58px + env(safe-area-inset-top)); align-items: center; gap: 10px; padding: calc(8px + env(safe-area-inset-top)) 16px 8px; background: #000; color: #fff; box-shadow: 0 3px 14px rgba(0,0,0,.24); opacity: 0; visibility: hidden; pointer-events: none; transform: translateY(-100%); transition: opacity .18s ease, transform .18s ease, visibility .18s; }
+    .scroll-mark.is-visible { opacity: 1; visibility: visible; pointer-events: none; transform: translateY(0); }
+    .scroll-mark-icon { display: block; width: 36px; height: 36px; flex: 0 0 36px; }
+    .scroll-mark-label { font-size: 16px; font-weight: 800; letter-spacing: .08em; }
+    @media (min-width: 680px) {
+      .wrap { padding-top: 34px; }
+      .filters { padding: 24px; }
+      .card { padding: 22px 24px; }
+      .detail { grid-template-columns: 96px 1fr; }
+    }
+    @media (prefers-reduced-motion: reduce) { *, *::before, *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; } }
+  </style>
+</head>
+<body>
+  <main class="wrap">
+    <div class="topline"><span>Tokyo · Art Guide</span><span class="season">WINTER 2026—27</span></div>
+    <h1>도쿄 미술관 전시회</h1>
+    <p class="intro">가고 싶은 날짜와 동네, 관심 분야를 골라보세요.<br>선택한 날 실제로 문을 여는 전시를 안내합니다.</p>
+
+    <section class="filters" aria-labelledby="filterTitle">
+      <div class="filter-head">
+        <h2 id="filterTitle">어떤 전시를 찾으세요?</h2>
+        <button class="reset" id="reset" type="button">초기화 ↺</button>
+      </div>
+      <div class="group">
+        <label class="label" for="visitDate">① 방문 날짜</label>
+        <input id="visitDate" type="date" min="2026-12-01" max="2027-01-31" value="2026-12-01">
+      </div>
+      <fieldset class="group" style="border:0;padding:0;margin-inline:0">
+        <legend class="label">② 동네 <span style="font-weight:400;color:#64716b">(여러 곳 선택 가능)</span></legend>
+        <div class="chips" id="areas"></div>
+      </fieldset>
+      <fieldset class="group" style="border:0;padding:0;margin-inline:0">
+        <legend class="label">③ 관심 분야 <span style="font-weight:400;color:#64716b">(여러 분야 선택 가능)</span></legend>
+        <div class="chips" id="interests"></div>
+      </fieldset>
+      <label class="closed-toggle"><input id="includeClosed" type="checkbox"> 휴관하는 전시도 함께 보기</label>
+    </section>
+
+    <section aria-live="polite" aria-atomic="false">
+      <div class="results-head"><h2 id="resultTitle">12월 1일의 전시</h2><span id="resultCount"></span></div>
+      <div class="cards" id="results"></div>
+    </section>
+    <p class="foot">운영·예약 정보는 공식 안내를 바탕으로 정리했으며, 실시간 매진 여부는 표시하지 않습니다. 방문 전 공식 페이지에서 최신 공지를 확인해 주세요.</p>
+  </main>
+  <div class="scroll-mark" id="scrollMark" aria-label="도미전" aria-hidden="true">
+    <svg class="scroll-mark-icon" viewBox="0 0 48 48" role="img" aria-label="도미전 아이콘">
+      <circle cx="24" cy="24" r="22" fill="#f4eee1"/>
+      <circle cx="24" cy="24" r="17" fill="#e1a34f"/>
+      <path d="M10 24c4-5 8-7 14-7s10 2 14 7c-4 5-8 7-14 7s-10-2-14-7Z" fill="#fff1c8" stroke="#85512b" stroke-width="1.6"/>
+      <path d="m10 24-5-4v8l5-4Zm28 0 5-4v8l-5-4Z" fill="#d77b3f" stroke="#85512b" stroke-width="1.4" stroke-linejoin="round"/>
+      <circle cx="17" cy="23" r="1" fill="#392b20"/>
+      <path d="m20 20 4 8m2-8 4 8" stroke="#d59a45" stroke-width="1.4" stroke-linecap="round"/>
+    </svg>
+    <span class="scroll-mark-label">도미전</span>
+  </div>
+  <script>
+    const DATA = [
+      {id:"nact-louvre-renaissance",titleKo:"루브르 미술관전: 르네상스",titleJa:"ルーヴル美術館展　ルネサンス",venue:"국립신미술관",area:"롯폰기",interests:["회화·고전미술"],start:"2026-09-09",end:"2026-12-13",officialUrl:"https://www.nact.jp/exhibition_special/2026/louvre2026/",calendar:{closedWeekdays:[2],openDates:["2026-12-08"],closedDates:[],yearEnd:{status:"outside",note:"연말 전에 전시 종료"}},hours:{open:"10:00",close:"18:00",lastEntryMinutes:30,night:false,changes:[{weekdays:[5,6],close:"20:00",night:true},{from:"2026-12-07",to:"2026-12-12",close:"20:00",night:true}]},booking:[{status:"시간 지정 불필요",note:"12월 6일까지 일반 입장권으로 관람."},{from:"2026-12-07",to:"2026-12-13",status:"시간 지정권 필요",note:"일반 관람객은 시간 지정권이 필요합니다."}]},
+      {id:"mori-mariko-sansan",titleKo:"모리 마리코: 산산",titleJa:"森万里子：燦燦",venue:"모리미술관",area:"롯폰기",interests:["현대미술·설치"],start:"2026-10-31",end:"2027-03-28",officialUrl:"https://www.mori.art.museum/jp/exhibitions/marikomori/",calendar:{closedWeekdays:[],openDates:[],closedDates:[],yearEnd:{status:"open",note:"전시 기간 무휴"}},hours:{open:"10:00",close:"22:00",lastEntryMinutes:30,night:true,changes:[{weekdays:[2],close:"17:00",night:false}]},booking:[{status:"시간 지정제",note:"회차 잔여석이 있을 때만 예약 없이 당일 입장 가능."}]},
+      {id:"tobikan-orsay",titleKo:"오르세 미술관 소장전: 지금을 사는 기쁨",titleJa:"オルセー美術館所蔵　いまを生きる歓び",venue:"도쿄도미술관 기획전시실",area:"우에노",interests:["회화·고전미술","디자인·건축·공예"],start:"2026-11-14",end:"2027-03-28",officialUrl:"https://www.tobikan.jp/exhibition/2026_orsay.html",calendar:{closedWeekdays:[1],openDates:["2027-01-04","2027-01-11"],closedDates:["2027-01-12"],yearEnd:{status:"closed",from:"2026-12-22",to:"2027-01-03",note:"연말연시 전시실 휴관"}},hours:{open:"09:30",close:"17:30",lastEntryMinutes:30,night:false,changes:[{weekdays:[5],close:"20:00",night:true}]},booking:[{status:"시간 지정 불필요",note:"일반 개인 관람 기준. 혼잡 시 대기할 수 있습니다."}]},
+      {id:"tobikan-archives-100",titleKo:"도쿄도미술관의 100년: 아카이브전",titleJa:"はじまりをひらく　東京都美術館の100年",venue:"도쿄도미술관 갤러리 B",area:"우에노",interests:["역사·문화·과학"],start:"2026-11-19",end:"2027-01-11",officialUrl:"https://www.tobikan.jp/exhibition/2026_archives.html",calendar:{closedWeekdays:[],openDates:[],closedDates:["2026-12-07"],yearEnd:{status:"closed",from:"2026-12-21",to:"2027-01-03",note:"연말연시 휴관"}},hours:{open:"09:30",close:"17:30",lastEntryMinutes:30,night:false,changes:[{weekdays:[5],close:"20:00",night:true}]},booking:[{status:"미확인",note:"무료 전시이나 일반 관람 예약 여부는 공식 안내에서 확인되지 않았습니다."}]},
+      {id:"station-astrup",titleKo:"니콜라이 아스트루프: 창조하는 정원",titleJa:"ニコライ・アストルップ　創造する庭",venue:"도쿄 스테이션 갤러리",area:"마루노우치",interests:["회화·고전미술","디자인·건축·공예"],start:"2026-11-21",end:"2027-01-31",officialUrl:"https://www.ejrcf.or.jp/gallery/exhibition/202611_astrup.html",calendar:{closedWeekdays:[1],openDates:["2027-01-11","2027-01-25"],closedDates:["2027-01-12"],yearEnd:{status:"closed",from:"2026-12-28",to:"2027-01-02",note:"연말연시 휴관"}},hours:{open:"10:00",close:"18:00",lastEntryMinutes:30,night:false,changes:[{weekdays:[5],close:"20:00",night:true}]},booking:[{status:"시간 지정 불필요",note:"온라인 또는 현장 구매 가능. 혼잡 시 대기할 수 있습니다."}]},
+      {id:"teien-marimekko",titleKo:"마리메꼬: 무늬의 힘",titleJa:"マリメッコ展　模様のちから",venue:"도쿄도 정원미술관",area:"시로카네다이",interests:["디자인·건축·공예","현대미술·설치"],start:"2026-10-03",end:"2026-12-20",officialUrl:"https://www.teien-art-museum.ne.jp/exhibition/20261003-1220_marimekko/",calendar:{closedWeekdays:[1],openDates:[],closedDates:[],yearEnd:{status:"outside",note:"12월 20일 종료"}},hours:{open:"10:00",close:"18:00",lastEntryMinutes:30,night:false,changes:[{dates:["2026-12-04","2026-12-05"],close:"20:00",night:true}]},booking:[{status:"시간 지정 예약제",note:"사전 예매 권장. 당일권은 소량이며 입장이 보장되지 않습니다."}]},
+      {id:"teien-lithuania",titleKo:"사랑을 잣고 기도를 새기다: 리투아니아의 수공예",titleJa:"愛を紡ぎ、祈りを刻む―リトアニアの手仕事―",venue:"도쿄도 정원미술관",area:"시로카네다이",interests:["디자인·건축·공예","역사·문화·과학"],start:"2027-01-16",end:"2027-03-28",officialUrl:"https://www.teien-art-museum.ne.jp/exhibition/270116-0328_lithuania/",calendar:{closedWeekdays:[1],openDates:[],closedDates:[],yearEnd:{status:"outside",note:"1월 16일 개막"}},hours:{open:"10:00",close:"18:00",lastEntryMinutes:30,night:false,changes:[]},booking:[{status:"시간 지정 예약제",note:"일반 관람객은 방문 전 예약이 필요합니다."}]}
+    ];
+    const AREAS = ["롯폰기","우에노","마루노우치","시로카네다이"];
+    const INTERESTS = ["회화·고전미술","현대미술·설치","디자인·건축·공예","역사·문화·과학"];
+    const $ = (id) => document.getElementById(id);
+    const dateInput = $("visitDate");
+    const fmtDate = (date) => `${Number(date.slice(0,4))}년 ${Number(date.slice(5,7))}월 ${Number(date.slice(8,10))}일`;
+    const inRange = (date, from, to) => (!from || date >= from) && (!to || date <= to);
+    function makeChips(target, values, prefix) {
+      $(target).innerHTML = values.map((value, i) => `<label class="chip"><input type="checkbox" value="${value}" id="${prefix}-${i}"><span>${value}</span></label>`).join("");
+    }
+    makeChips("areas", AREAS, "area");
+    makeChips("interests", INTERESTS, "interest");
+    function operating(date, exhibition) {
+      const {calendar} = exhibition;
+      const weekday = new Date(`${date}T12:00:00+09:00`).getUTCDay() || 7;
+      if (calendar.closedDates.includes(date)) return {open:false, reason:"이 날짜는 특별 휴관일입니다."};
+      if (calendar.openDates.includes(date)) return {open:true, reason:"정기 휴관일이지만 특별 개관합니다."};
+      if (calendar.yearEnd.status === "closed" && inRange(date, calendar.yearEnd.from, calendar.yearEnd.to))
+        return {open:false, reason:calendar.yearEnd.note || "연말연시 휴관 기간입니다."};
+      if (calendar.closedWeekdays.includes(weekday)) return {open:false, reason:"정기 휴관일입니다."};
+      return {open:true, reason:""};
+    }
+    function schedule(date, exhibition) {
+      let chosen = null;
+      for (const change of exhibition.hours.changes) {
+        const matches = change.dates ? change.dates.includes(date)
+          : change.weekdays ? change.weekdays.includes(new Date(`${date}T12:00:00+09:00`).getUTCDay() || 7)
+          : inRange(date, change.from, change.to);
+        if (matches) chosen = change;
+      }
+      const close = chosen?.close || exhibition.hours.close;
+      const [hour, minute] = close.split(":").map(Number);
+      const last = hour * 60 + minute - exhibition.hours.lastEntryMinutes;
+      const lastEntry = `${String(Math.floor(last / 60)).padStart(2,"0")}:${String(last % 60).padStart(2,"0")}`;
+      const night = chosen?.night ?? exhibition.hours.night;
+      return {open:exhibition.hours.open,close,lastEntry,night};
+    }
+    function booking(date, exhibition) {
+      let selected = exhibition.booking[0];
+      for (const rule of exhibition.booking) {
+        if (inRange(date, rule.from || rule.start, rule.to || rule.end)) selected = rule;
+      }
+      return selected;
+    }
+    function text(tag, value, className) {
+      const element = document.createElement(tag);
+      if (className) element.className = className;
+      element.textContent = value;
+      return element;
+    }
+    function render() {
+      const date = dateInput.value;
+      const result = $("results");
+      result.replaceChildren();
+      if (!date) { $("resultTitle").textContent="방문 날짜를 선택해 주세요"; $("resultCount").textContent=""; return; }
+      if (date < dateInput.min || date > dateInput.max) {
+        $("resultTitle").textContent="조회 기간을 확인해 주세요";
+        $("resultCount").textContent="";
+        result.append(text("p","2026년 12월 1일에서 2027년 1월 31일 사이의 날짜를 선택해 주세요.","empty"));
+        return;
+      }
+      $("resultTitle").textContent=`${fmtDate(date)}의 전시`;
+      const selectedAreas = [...document.querySelectorAll("#areas input:checked")].map((node)=>node.value);
+      const selectedInterests = [...document.querySelectorAll("#interests input:checked")].map((node)=>node.value);
+      const candidates = DATA.filter((exhibition) => {
+        if (date < exhibition.start || date > exhibition.end) return false;
+        if (selectedAreas.length && !selectedAreas.includes(exhibition.area)) return false;
+        if (selectedInterests.length && !exhibition.interests.some((interest)=>selectedInterests.includes(interest))) return false;
+        return true;
+      }).map((exhibition)=>({exhibition, day:operating(date,exhibition)}))
+        .filter(({day})=>day.open || $("includeClosed").checked)
+        .sort((a,b)=>a.exhibition.end.localeCompare(b.exhibition.end));
+      $("resultCount").textContent=`${candidates.length}건`;
+      if (!candidates.length) {
+        result.append(text("p","조건에 맞는 전시가 없습니다. 날짜나 필터를 바꿔보세요.","empty"));
+        return;
+      }
+      for (const {exhibition:e,day} of candidates) {
+        const card=document.createElement("article");
+        card.className=`card${day.open?"":" closed"}`;
+        const top=document.createElement("div"); top.className="card-top";
+        top.append(text("span",e.area,"area"),text("span",day.open?"관람 가능":"휴관","status"+(day.open?"":" closed-label")));
+        card.append(top,text("h3",e.titleKo),text("p",e.titleJa,"title-ja"),text("p",e.venue,"venue"));
+        const tags=document.createElement("div"); tags.className="tags";
+        e.interests.forEach((interest)=>tags.append(text("span",interest,"tag")));
+        card.append(tags);
+        const detailList=document.createElement("dl"); detailList.className="details";
+        const addDetail=(label,value,warning=false)=>{
+          const row=document.createElement("div"); row.className="detail"+(warning?" warning":"");
+          row.append(text("dt",label),text("dd",value)); detailList.append(row);
+        };
+        if (day.open) {
+          const hours=schedule(date,e);
+          addDetail("오늘 운영",`${hours.open}–${hours.close} · 마지막 입장 ${hours.lastEntry}${hours.night?" · 야간 개관":""}${day.reason?` · ${day.reason}`:""}`);
+        } else addDetail("휴관 안내",day.reason,true);
+        addDetail("전시 기간",`${fmtDate(e.start)} – ${fmtDate(e.end)} 종료`);
+        addDetail("예약",booking(date,e).status+(booking(date,e).note?` · ${booking(date,e).note}`:""),booking(date,e).status==="미확인");
+        if (e.calendar.yearEnd.status==="closed") addDetail("연말연시",`${fmtDate(e.calendar.yearEnd.from)}–${fmtDate(e.calendar.yearEnd.to)} 휴관`);
+        const link=document.createElement("a"); link.className="official"; link.href=e.officialUrl; link.target="_blank"; link.rel="noopener noreferrer"; link.textContent="공식 전시 안내 보기 ↗";
+        card.append(detailList,link); result.append(card);
+      }
+    }
+    dateInput.addEventListener("input",render);
+    $("areas").addEventListener("change",render);
+    $("interests").addEventListener("change",render);
+    $("includeClosed").addEventListener("change",render);
+    $("reset").addEventListener("click",()=>{
+      dateInput.value="2026-12-01";
+      document.querySelectorAll(".filters input[type=checkbox]").forEach((input)=>input.checked=false);
+      render();
+    });
+    const scrollMark = $("scrollMark");
+    const themeColor = document.querySelector('meta[name="theme-color"]');
+    function updateScrollMark() {
+      const visible = window.scrollY > 120;
+      scrollMark.classList.toggle("is-visible", visible);
+      scrollMark.setAttribute("aria-hidden", String(!visible));
+      themeColor.content = visible ? "#000000" : "#f5f2eb";
+    }
+    window.addEventListener("scroll", updateScrollMark, {passive:true});
+    updateScrollMark();
+    render();
+  </script>
+</body>
+</html>
