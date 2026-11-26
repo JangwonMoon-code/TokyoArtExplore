@@ -1,11 +1,11 @@
 <!doctype html>
-<html lang="ko">
+<html lang="en">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#f5f2eb">
-  <meta name="description" content="2026년 12월과 2027년 1월, 도쿄 전시를 날짜와 동네, 관심 분야로 찾아보세요.">
-  <title>도쿄 미술관 전시회</title>
+  <meta name="description" content="Find Tokyo exhibitions and cultural events in December 2026 and January 2027 by date, neighborhood, venue type, and interest.">
+  <title>Tokyo Art Exhibitions</title>
   <style>
     :root {
       color-scheme: light;
@@ -26,7 +26,10 @@
     a { color: inherit; }
     .wrap { width: min(100% - 32px, 760px); margin: 0 auto; padding: 22px 0 56px; }
     .topline { display: flex; justify-content: space-between; align-items: center; color: var(--green); font-size: 12px; font-weight: 750; letter-spacing: .12em; text-transform: uppercase; }
-    .season { color: var(--muted); font-size: 12px; letter-spacing: 0; }
+    .languages { display: flex; align-items: center; gap: 4px; letter-spacing: 0; }
+    .language-button { min-height: 32px; border: 1px solid var(--line); border-radius: 999px; padding: 0 8px; background: white; color: var(--ink); font-size: 11px; font-weight: 700; cursor: pointer; }
+    .language-button[aria-pressed="true"] { border-color: var(--green); background: var(--green); color: white; }
+    .season { margin: 8px 0 0; color: var(--muted); font-size: 11px; letter-spacing: .08em; }
     h1 { margin: 22px 0 8px; max-width: 100%; font-family: Georgia, "Yu Mincho", serif; font-size: clamp(29px, 9vw, 66px); font-weight: 500; letter-spacing: -.07em; line-height: 1.15; white-space: nowrap; }
     .intro { max-width: 510px; margin: 16px 0 24px; color: var(--muted); font-size: 15px; line-height: 1.7; }
     .filters { padding: 20px; border: 1px solid var(--line); border-radius: 20px; background: rgba(255,254,250,.72); }
@@ -54,7 +57,9 @@
     .area { color: var(--green); font-size: 12px; font-weight: 800; letter-spacing: .05em; }
     .status { flex: 0 0 auto; padding: 5px 9px; border-radius: 999px; background: var(--mint); color: var(--green); font-size: 11px; font-weight: 750; }
     .status.closed-label { background: #f8e6dc; color: var(--orange); }
-    .card h3 { margin: 14px 0 3px; font-family: Georgia, "Yu Mincho", serif; font-size: 23px; font-weight: 600; line-height: 1.3; }
+    .card-heading { display: grid; grid-template-columns: 76px minmax(0, 1fr); align-items: center; gap: 14px; margin: 14px 0 3px; }
+    .poster { display: block; width: 76px; aspect-ratio: 3 / 4; object-fit: cover; border-radius: 8px; background: #ece9e1; }
+    .card h3 { margin: 0; font-family: Georgia, "Yu Mincho", serif; font-size: 23px; font-weight: 600; line-height: 1.3; }
     .title-ja { margin: 0; color: var(--muted); font-size: 13px; line-height: 1.5; }
     .venue { margin: 11px 0 0; font-size: 13px; font-weight: 700; }
     .tags { display: flex; flex-wrap: wrap; gap: 6px; margin: 13px 0 14px; }
@@ -82,35 +87,48 @@
 </head>
 <body>
   <main class="wrap">
-    <div class="topline"><span>Tokyo · Art Guide</span><span class="season">WINTER 2026—27</span></div>
-    <h1>도쿄 미술관 전시회</h1>
-    <p class="intro">가고 싶은 날짜와 동네, 관심 분야를 골라보세요.<br>선택한 날 실제로 문을 여는 전시를 안내합니다.</p>
+    <div class="topline">
+      <span id="brandName">Tokyo · Art Guide</span>
+      <nav class="languages" aria-label="Language">
+        <button class="language-button" type="button" data-lang="en" aria-pressed="true">EN</button>
+        <button class="language-button" type="button" data-lang="ko" aria-pressed="false">한국어</button>
+        <button class="language-button" type="button" data-lang="zh" aria-pressed="false">中文</button>
+        <button class="language-button" type="button" data-lang="ja" aria-pressed="false">日本語</button>
+      </nav>
+    </div>
+    <p class="season" id="season">WINTER 2026—27</p>
+    <h1 id="pageTitle">Tokyo Art Exhibitions</h1>
+    <p class="intro" id="intro">Browse exhibitions and cultural events by date, neighborhood, and interest.<br>See what is open on your selected day.</p>
 
     <section class="filters" aria-labelledby="filterTitle">
       <div class="filter-head">
-        <h2 id="filterTitle">어떤 전시를 찾으세요?</h2>
-        <button class="reset" id="reset" type="button">초기화 ↺</button>
+        <h2 id="filterTitle">Find exhibitions and events</h2>
+        <button class="reset" id="reset" type="button">Reset ↺</button>
       </div>
       <div class="group">
-        <label class="label" for="visitDate">① 방문 날짜</label>
-        <input id="visitDate" type="date" min="2026-12-01" max="2027-01-31" value="2026-12-01">
+        <label class="label" id="dateLabel" for="visitDate">① Visit date</label>
+        <input id="visitDate" type="date" min="2026-11-26" max="2027-01-31" value="2026-11-26">
       </div>
       <fieldset class="group" style="border:0;padding:0;margin-inline:0">
-        <legend class="label">② 동네 <span style="font-weight:400;color:#64716b">(여러 곳 선택 가능)</span></legend>
+        <legend class="label" id="areaLabel">② Neighborhood <span style="font-weight:400;color:#64716b">(select any)</span></legend>
         <div class="chips" id="areas"></div>
       </fieldset>
       <fieldset class="group" style="border:0;padding:0;margin-inline:0">
-        <legend class="label">③ 관심 분야 <span style="font-weight:400;color:#64716b">(여러 분야 선택 가능)</span></legend>
+        <legend class="label" id="venueTypeLabel">③ Venue and event type <span style="font-weight:400;color:#64716b">(select any)</span></legend>
+        <div class="chips" id="venueTypes"></div>
+      </fieldset>
+      <fieldset class="group" style="border:0;padding:0;margin-inline:0">
+        <legend class="label" id="interestLabel">④ Interests <span style="font-weight:400;color:#64716b">(select any)</span></legend>
         <div class="chips" id="interests"></div>
       </fieldset>
-      <label class="closed-toggle"><input id="includeClosed" type="checkbox"> 휴관하는 전시도 함께 보기</label>
+      <label class="closed-toggle"><input id="includeClosed" type="checkbox"> <span id="closedLabel">Include closed venues</span></label>
     </section>
 
     <section aria-live="polite" aria-atomic="false">
-      <div class="results-head"><h2 id="resultTitle">12월 1일의 전시</h2><span id="resultCount"></span></div>
+      <div class="results-head"><h2 id="resultTitle">Exhibitions on December 1, 2026</h2><span id="resultCount"></span></div>
       <div class="cards" id="results"></div>
     </section>
-    <p class="foot">운영·예약 정보는 공식 안내를 바탕으로 정리했으며, 실시간 매진 여부는 표시하지 않습니다. 방문 전 공식 페이지에서 최신 공지를 확인해 주세요.</p>
+    <p class="foot" id="footnote">Hours, closures, and ticket information are based on official sources and may change. Check the linked official page before visiting; availability is not live.</p>
   </main>
   <div class="scroll-mark" id="scrollMark" aria-label="도미전" aria-hidden="true">
     <svg class="scroll-mark-icon" viewBox="0 0 48 48" role="img" aria-label="도미전 아이콘">
@@ -125,33 +143,146 @@
   </div>
   <script>
     const DATA = [
-      {id:"nact-louvre-renaissance",titleKo:"루브르 미술관전: 르네상스",titleJa:"ルーヴル美術館展　ルネサンス",venue:"국립신미술관",area:"롯폰기",interests:["회화·고전미술"],start:"2026-09-09",end:"2026-12-13",officialUrl:"https://www.nact.jp/exhibition_special/2026/louvre2026/",calendar:{closedWeekdays:[2],openDates:["2026-12-08"],closedDates:[],yearEnd:{status:"outside",note:"연말 전에 전시 종료"}},hours:{open:"10:00",close:"18:00",lastEntryMinutes:30,night:false,changes:[{weekdays:[5,6],close:"20:00",night:true},{from:"2026-12-07",to:"2026-12-12",close:"20:00",night:true}]},booking:[{status:"시간 지정 불필요",note:"12월 6일까지 일반 입장권으로 관람."},{from:"2026-12-07",to:"2026-12-13",status:"시간 지정권 필요",note:"일반 관람객은 시간 지정권이 필요합니다."}]},
-      {id:"mori-mariko-sansan",titleKo:"모리 마리코: 산산",titleJa:"森万里子：燦燦",venue:"모리미술관",area:"롯폰기",interests:["현대미술·설치"],start:"2026-10-31",end:"2027-03-28",officialUrl:"https://www.mori.art.museum/jp/exhibitions/marikomori/",calendar:{closedWeekdays:[],openDates:[],closedDates:[],yearEnd:{status:"open",note:"전시 기간 무휴"}},hours:{open:"10:00",close:"22:00",lastEntryMinutes:30,night:true,changes:[{weekdays:[2],close:"17:00",night:false}]},booking:[{status:"시간 지정제",note:"회차 잔여석이 있을 때만 예약 없이 당일 입장 가능."}]},
-      {id:"tobikan-orsay",titleKo:"오르세 미술관 소장전: 지금을 사는 기쁨",titleJa:"オルセー美術館所蔵　いまを生きる歓び",venue:"도쿄도미술관 기획전시실",area:"우에노",interests:["회화·고전미술","디자인·건축·공예"],start:"2026-11-14",end:"2027-03-28",officialUrl:"https://www.tobikan.jp/exhibition/2026_orsay.html",calendar:{closedWeekdays:[1],openDates:["2027-01-04","2027-01-11"],closedDates:["2027-01-12"],yearEnd:{status:"closed",from:"2026-12-22",to:"2027-01-03",note:"연말연시 전시실 휴관"}},hours:{open:"09:30",close:"17:30",lastEntryMinutes:30,night:false,changes:[{weekdays:[5],close:"20:00",night:true}]},booking:[{status:"시간 지정 불필요",note:"일반 개인 관람 기준. 혼잡 시 대기할 수 있습니다."}]},
-      {id:"tobikan-archives-100",titleKo:"도쿄도미술관의 100년: 아카이브전",titleJa:"はじまりをひらく　東京都美術館の100年",venue:"도쿄도미술관 갤러리 B",area:"우에노",interests:["역사·문화·과학"],start:"2026-11-19",end:"2027-01-11",officialUrl:"https://www.tobikan.jp/exhibition/2026_archives.html",calendar:{closedWeekdays:[],openDates:[],closedDates:["2026-12-07"],yearEnd:{status:"closed",from:"2026-12-21",to:"2027-01-03",note:"연말연시 휴관"}},hours:{open:"09:30",close:"17:30",lastEntryMinutes:30,night:false,changes:[{weekdays:[5],close:"20:00",night:true}]},booking:[{status:"미확인",note:"무료 전시이나 일반 관람 예약 여부는 공식 안내에서 확인되지 않았습니다."}]},
-      {id:"station-astrup",titleKo:"니콜라이 아스트루프: 창조하는 정원",titleJa:"ニコライ・アストルップ　創造する庭",venue:"도쿄 스테이션 갤러리",area:"마루노우치",interests:["회화·고전미술","디자인·건축·공예"],start:"2026-11-21",end:"2027-01-31",officialUrl:"https://www.ejrcf.or.jp/gallery/exhibition/202611_astrup.html",calendar:{closedWeekdays:[1],openDates:["2027-01-11","2027-01-25"],closedDates:["2027-01-12"],yearEnd:{status:"closed",from:"2026-12-28",to:"2027-01-02",note:"연말연시 휴관"}},hours:{open:"10:00",close:"18:00",lastEntryMinutes:30,night:false,changes:[{weekdays:[5],close:"20:00",night:true}]},booking:[{status:"시간 지정 불필요",note:"온라인 또는 현장 구매 가능. 혼잡 시 대기할 수 있습니다."}]},
-      {id:"teien-marimekko",titleKo:"마리메꼬: 무늬의 힘",titleJa:"マリメッコ展　模様のちから",venue:"도쿄도 정원미술관",area:"시로카네다이",interests:["디자인·건축·공예","현대미술·설치"],start:"2026-10-03",end:"2026-12-20",officialUrl:"https://www.teien-art-museum.ne.jp/exhibition/20261003-1220_marimekko/",calendar:{closedWeekdays:[1],openDates:[],closedDates:[],yearEnd:{status:"outside",note:"12월 20일 종료"}},hours:{open:"10:00",close:"18:00",lastEntryMinutes:30,night:false,changes:[{dates:["2026-12-04","2026-12-05"],close:"20:00",night:true}]},booking:[{status:"시간 지정 예약제",note:"사전 예매 권장. 당일권은 소량이며 입장이 보장되지 않습니다."}]},
-      {id:"teien-lithuania",titleKo:"사랑을 잣고 기도를 새기다: 리투아니아의 수공예",titleJa:"愛を紡ぎ、祈りを刻む―リトアニアの手仕事―",venue:"도쿄도 정원미술관",area:"시로카네다이",interests:["디자인·건축·공예","역사·문화·과학"],start:"2027-01-16",end:"2027-03-28",officialUrl:"https://www.teien-art-museum.ne.jp/exhibition/270116-0328_lithuania/",calendar:{closedWeekdays:[1],openDates:[],closedDates:[],yearEnd:{status:"outside",note:"1월 16일 개막"}},hours:{open:"10:00",close:"18:00",lastEntryMinutes:30,night:false,changes:[]},booking:[{status:"시간 지정 예약제",note:"일반 관람객은 방문 전 예약이 필요합니다."}]}
+      {"id":"nact-louvre-renaissance","titleKo":"루브르 미술관전: 르네상스","titleJa":"ルーヴル美術館展　ルネサンス","venue":"국립신미술관","area":"롯폰기","interests":["westernClassical"],"venueTypes":["artMuseum","national"],"start":"2026-09-09","end":"2026-12-13","officialUrl":"https://www.nact.jp/exhibition_special/2026/louvre2026/","checkedOn":"2026-11-26","calendar":{"closedWeekdays":[2],"openDates":["2026-12-08"],"closedDates":[],"yearEnd":{"status":"outside","note":"연말 전에 전시 종료"}},"hours":{"open":"10:00","close":"18:00","lastEntryMinutes":30,"night":false,"changes":[{"weekdays":[5,6],"close":"20:00","night":true},{"from":"2026-12-07","to":"2026-12-12","close":"20:00","night":true}]},"booking":[{"status":"시간 지정 불필요","note":"12월 6일까지 일반 입장권으로 관람."},{"from":"2026-12-07","to":"2026-12-13","status":"시간 지정권 필요","note":"일반 관람객은 시간 지정권이 필요합니다."}],"prices":{"general":2400,"students":[{"level":"University","amount":1400},{"level":"High school","amount":1000},{"level":"Middle school and under","amount":0}],"note":{"en":"Advance prices shown; day-ticket prices are not listed separately. Student ID required.","ko":"표시 요금은 예매 요금이며 당일권 금액은 별도 안내되지 않았습니다. 학생증 필요.","zh":"所示为预售价格；页面未单独列出当日票价。学生需出示学生证。","ja":"表示は前売料金です。当日券の料金は別途記載されていません。学生証が必要です。"}}},
+      {"id":"mori-mariko-sansan","titleKo":"모리 마리코: 산산","titleJa":"森万里子：燦燦","venue":"모리미술관","area":"롯폰기","interests":["contemporaryInstallations"],"venueTypes":["artMuseum","private"],"start":"2026-10-31","end":"2027-03-28","officialUrl":"https://www.mori.art.museum/jp/exhibitions/marikomori/","posterUrl":"https://www.mori.art.museum/files/exhibitions/2026/09/16/ogp_mori_mariko_260916.jpg","checkedOn":"2026-11-26","calendar":{"closedWeekdays":[],"openDates":[],"closedDates":[],"yearEnd":{"status":"open","note":"전시 기간 무휴"}},"hours":{"open":"10:00","close":"22:00","lastEntryMinutes":30,"night":true,"changes":[{"weekdays":[2],"close":"17:00","night":false}]},"booking":[{"status":"시간 지정제","note":"회차 잔여석이 있을 때만 예약 없이 당일 입장 가능."}],"prices":{"general":{"min":2600,"max":3000},"students":[{"level":"High school / university","amount":{"min":1600,"max":1800}}],"note":{"en":"Weekday: ¥2,600 online / ¥2,800 counter. Weekend and holiday: ¥2,800 / ¥3,000. Dec 30–31 use holiday rates. Junior high and under free.","ko":"평일 온라인 2,600엔·창구 2,800엔, 주말·공휴일 온라인 2,800엔·창구 3,000엔. 12월 30~31일은 주말 요금, 중학생 이하는 무료.","zh":"工作日线上2,600日元／柜台2,800日元；周末及节假日线上2,800日元／柜台3,000日元。12月30、31日按节假日价格；初中及以下免费。","ja":"平日オンライン2,600円／窓口2,800円、土日祝オンライン2,800円／窓口3,000円。12月30・31日は土日祝料金、中学生以下無料。"}}},
+      {"id":"tobikan-orsay","titleKo":"오르세 미술관 소장전: 지금을 사는 기쁨","titleJa":"オルセー美術館所蔵　いまを生きる歓び","venue":"도쿄도미술관 기획전시실","area":"우에노","interests":["westernClassical","sculpture3d","architectureCrafts"],"venueTypes":["artMuseum","prefectural"],"start":"2026-11-14","end":"2027-03-28","officialUrl":"https://www.tobikan.jp/exhibition/2026_orsay.html","posterUrl":"https://www.tobikan.jp/media/img/poster/2026_orsay.jpg?r1","checkedOn":"2026-11-26","calendar":{"closedWeekdays":[1],"openDates":["2027-01-04","2027-01-11"],"closedDates":["2027-01-12"],"yearEnd":{"status":"closed","from":"2026-12-22","to":"2027-01-03","note":"연말연시 전시실 휴관"}},"hours":{"open":"09:30","close":"17:30","lastEntryMinutes":30,"night":false,"changes":[{"weekdays":[5],"close":"20:00","night":true}]},"booking":[{"status":"시간 지정 불필요","note":"일반 개인 관람 기준. 혼잡 시 대기할 수 있습니다."}],"prices":{"general":2400,"students":[{"level":"University","amount":1300},{"level":"High school and under","amount":0}],"note":{"en":"University/vocational students are free on weekdays Dec 8–18; high school and under are free.","ko":"12월 8~18일 평일 대학·전문학교생 무료이며, 고등학생 이하는 무료입니다.","zh":"12月8日至18日工作日大学／专门学校生免费；高中及以下免费。","ja":"12月8日～18日の平日は大学・専門学校生無料、高校生以下無料。"}}},
+      {"id":"tobikan-archives-100","titleKo":"도쿄도미술관의 100년: 아카이브전","titleJa":"はじまりをひらく　東京都美術館の100年","venue":"도쿄도미술관 갤러리 B","area":"우에노","interests":["historyArchaeology"],"venueTypes":["artMuseum","prefectural"],"start":"2026-11-19","end":"2027-01-11","officialUrl":"https://www.tobikan.jp/exhibition/2026_archives.html","posterUrl":"https://www.tobikan.jp/media/img/poster/2026_archives.jpg","checkedOn":"2026-11-26","calendar":{"closedWeekdays":[],"openDates":[],"closedDates":["2026-12-07"],"yearEnd":{"status":"closed","from":"2026-12-21","to":"2027-01-03","note":"연말연시 휴관"}},"hours":{"open":"09:30","close":"17:30","lastEntryMinutes":30,"night":false,"changes":[{"weekdays":[5],"close":"20:00","night":true}]},"booking":[{"status":"미확인","note":"무료 전시이나 일반 관람 예약 여부는 공식 안내에서 확인되지 않았습니다."}],"prices":{"general":0,"students":[{"level":"All students","amount":0}],"note":{"en":"Admission is free for all visitors.","ko":"모든 관람객 무료입니다.","zh":"所有观众免费。","ja":"すべての来館者が無料です。"}}},
+      {"id":"station-astrup","titleKo":"니콜라이 아스트루프: 창조하는 정원","titleJa":"ニコライ・アストルップ　創造する庭","venue":"도쿄 스테이션 갤러리","area":"마루노우치","interests":["westernClassical","architectureCrafts"],"venueTypes":["gallery","private"],"start":"2026-11-21","end":"2027-01-31","officialUrl":"https://www.ejrcf.or.jp/gallery/exhibition/202611_astrup.html","posterUrl":"https://www.ejrcf.or.jp/gallery/common/img/exhibition/202611_astrup/img_mv_202611_astrup_pc.jpg","checkedOn":"2026-11-26","calendar":{"closedWeekdays":[1],"openDates":["2027-01-11","2027-01-25"],"closedDates":["2027-01-12"],"yearEnd":{"status":"closed","from":"2026-12-28","to":"2027-01-02","note":"연말연시 휴관"}},"hours":{"open":"10:00","close":"18:00","lastEntryMinutes":30,"night":false,"changes":[{"weekdays":[5],"close":"20:00","night":true}]},"booking":[{"status":"시간 지정 불필요","note":"온라인 또는 현장 구매 가능. 혼잡 시 대기할 수 있습니다."}],"prices":{"general":1800,"students":[{"level":"High school / university","amount":1300},{"level":"Middle school and under","amount":0}],"note":{"en":"High school and university students need student ID; junior high and younger are free.","ko":"고등·대학생 학생증 필요, 중학생 이하는 무료입니다.","zh":"高中及大学生需出示学生证；初中及以下免费。","ja":"高校・大学生は学生証が必要、中学生以下無料。"}}},
+      {"id":"teien-marimekko","titleKo":"마리메꼬: 무늬의 힘","titleJa":"マリメッコ展　模様のちから","venue":"도쿄도 정원미술관","area":"시로카네다이","interests":["designFashion","contemporaryInstallations"],"venueTypes":["artMuseum","prefectural"],"start":"2026-10-03","end":"2026-12-20","officialUrl":"https://www.teien-art-museum.ne.jp/exhibition/20261003-1220_marimekko/","posterUrl":"https://www.teien-art-museum.ne.jp/wp-content/uploads/2025/12/c8170d710a9451adc7b936158658228d-768x1087.jpg","checkedOn":"2026-11-26","calendar":{"closedWeekdays":[1],"openDates":[],"closedDates":[],"yearEnd":{"status":"outside","note":"12월 20일 종료"}},"hours":{"open":"10:00","close":"18:00","lastEntryMinutes":30,"night":false,"changes":[{"dates":["2026-12-04","2026-12-05"],"close":"20:00","night":true}]},"booking":[{"status":"시간 지정 예약제","note":"사전 예매 권장. 당일권은 소량이며 입장이 보장되지 않습니다."}],"prices":{"general":1400,"students":[],"note":{"en":"The official table lists ¥1,120 and ¥700 in addition to the adult rate, but the accessible table does not identify those categories. Student eligibility is unconfirmed.","ko":"공식 표에는 일반 요금 외에 1,120엔·700엔도 있으나 확인 가능한 표에 대상 구분이 없습니다. 학생 요금 해당 여부는 미확인입니다.","zh":"官方票价表除成人票外还列有1,120日元和700日元，但可读取的表格未标明类别；是否为学生票尚未确认。","ja":"公式表には一般料金以外に1,120円・700円も記載されていますが、閲覧できる表では対象区分が不明です。学生料金かどうかは未確認です。"}}},
+      {"id":"teien-lithuania","titleKo":"사랑을 잣고 기도를 새기다: 리투아니아의 수공예","titleJa":"愛を紡ぎ、祈りを刻む―リトアニアの手仕事―","venue":"도쿄도 정원미술관","area":"시로카네다이","interests":["architectureCrafts","japaneseCultureTraditional","historyArchaeology"],"venueTypes":["artMuseum","prefectural"],"start":"2027-01-16","end":"2027-03-28","officialUrl":"https://www.teien-art-museum.ne.jp/exhibition/270116-0328_lithuania/","posterUrl":"https://www.teien-art-museum.ne.jp/wp-content/uploads/2026/02/lithuania-teien_KV300_final-1-768x1085.jpg","checkedOn":"2026-11-26","calendar":{"closedWeekdays":[1],"openDates":[],"closedDates":[],"yearEnd":{"status":"outside","note":"1월 16일 개막"}},"hours":{"open":"10:00","close":"18:00","lastEntryMinutes":30,"night":false,"changes":[]},"booking":[{"status":"시간 지정 예약제","note":"일반 관람객은 방문 전 예약이 필요합니다."}],"prices":{"general":1400,"students":[{"level":"University","amount":1120},{"level":"High school","amount":700},{"level":"Middle school and under","amount":0}],"note":{"en":"University and high-school students need student ID; junior high and under are free.","ko":"대학·고등학생은 학생증 필요, 중학생 이하는 무료입니다.","zh":"大学／高中生需出示学生证；初中及以下免费。","ja":"大学・高校生は学生証が必要、中学生以下無料。"}}},
+      {"id":"nact-shojo-manga","titleKo":"소녀만화 인피니티: 하기오 모토·야마기시 료코·야마토 와키","titleJa":"少女漫画・インフィニティ　三人展","venue":"국립신미술관","area":"롯폰기","interests":["japaneseCultureTraditional","musicPerformingPop"],"venueTypes":["artMuseum","national"],"start":"2026-10-28","end":"2027-02-08","officialUrl":"https://www.nact.jp/exhibition_special/2026/shojomanga/","checkedOn":"2026-11-26","calendar":{"closedWeekdays":[2],"openDates":["2026-12-08"],"closedDates":[],"yearEnd":{"status":"closed","from":"2026-12-28","to":"2027-01-05"}},"hours":{"open":"10:00","close":"18:00","lastEntryMinutes":30,"night":false,"changes":[{"weekdays":[5,6],"close":"20:00","night":true}]},"booking":[{"status":"시간 지정 불필요","note":"공식 안내에 사전·현장 판매가 있으며 시간 지정 여부는 명시되지 않았습니다."}],"prices":{"general":2200,"students":[{"level":"University","amount":1000},{"level":"High school","amount":500},{"level":"Middle school and under","amount":0}],"note":{"en":"Advance rates shown; day-ticket prices are not listed separately. Student ID required.","ko":"예매 요금이며 당일권은 별도 안내되지 않았습니다. 학생증이 필요합니다.","zh":"所示为预售价格，未单独列出当日票价。学生需出示学生证。","ja":"前売料金です。当日券の料金は別途記載されていません。学生証が必要です。"}}},
+      {"id":"macg-haikyu","titleKo":"하이큐!!전: 도전자들","titleJa":"ハイキュー!!展　挑戦者たち","venue":"모리 아츠 센터 갤러리","area":"롯폰기","interests":["musicPerformingPop"],"venueTypes":["gallery","private"],"start":"2026-10-30","end":"2027-01-11","officialUrl":"https://macg.roppongihills.com/jp/exhibitions/haikyu-challengers/","posterUrl":"https://macg.roppongihills.com/files/exhibitions/2026/07/09/ogp_haikyu-challengers0709.jpg","ticketUrl":"https://haikyu-challengers-ex.com/ticket/","checkedOn":"2026-11-26","calendar":{"closedWeekdays":[],"openDates":[],"closedDates":[],"yearEnd":{"status":"unknown","from":"2026-12-28","to":"2027-01-01"}},"hours":{"open":"10:00","close":"20:00","lastEntryMinutes":30,"night":true,"changes":[]},"booking":[{"status":"시간 지정제","note":"시간 지정 입장입니다. 이플러스 사전 판매만 있으며 현장 판매는 없습니다."}],"prices":{"general":2200,"students":[{"level":"High school","amount":1400},{"level":"Elementary / junior high","amount":900}],"note":{"en":"Children age 6 and under may enter free with an adult ticket holder under stated conditions.","ko":"만 6세 이하는 성인 티켓 소지자 동반 시 조건에 따라 무료입니다.","zh":"符合条件时，6岁及以下儿童可由持票成人免费陪同。","ja":"条件により6歳以下はチケット所持者の同伴で無料です。"}}},
+      {"id":"tnm-hiroshige","titleKo":"우타가와 히로시게: 에도의 베스트 앵글","titleJa":"歌川広重　江戸のベストアングル","venue":"도쿄국립박물관 본관 A실","area":"우에노","interests":["japaneseEastAsian","historyArchaeology"],"venueTypes":["museum","national"],"start":"2026-09-29","end":"2026-12-20","officialUrl":"https://www.tnm.jp/modules/r_free_page/index.php?id=2759&lang=en","posterUrl":"https://www.tnm.jp/uploads/r_exhibition/exhibition/SPECIAL_LARGE_8413.jpg","ticketUrl":"https://www.asoview.com/channel/ticket/jgz3hboMWt/ticket0000051106/","checkedOn":"2026-11-26","calendar":{"closedWeekdays":[1],"openDates":[],"closedDates":["2026-12-15"],"yearEnd":{"status":"outside"}},"hours":{"open":"09:30","close":"17:00","lastEntryMinutes":30,"night":false,"changes":[{"weekdays":[5,6],"close":"20:00","night":true}]},"booking":[{"status":"시간 지정 불필요","note":"예약 불필요. 혼잡 시 매표소에서 대기할 수 있습니다."}],"prices":{"general":1500,"students":[{"level":"University","amount":500},{"level":"High school and under","amount":0}],"note":{"en":"University ¥500; high school and under free.","ko":"대학생 500엔, 고등학생 이하는 무료입니다.","zh":"大学生500日元；高中及以下免费。","ja":"大学生500円、高校生以下無料。"}}},
+      {"id":"tnm-daitokuji","titleKo":"다이토쿠지: 일본 제일의 선원","titleJa":"特別展「大徳寺　本朝無双之禅苑」","venue":"도쿄국립박물관 헤이세이관","area":"우에노","interests":["japaneseCultureTraditional","historyArchaeology"],"venueTypes":["museum","national"],"start":"2026-10-14","end":"2026-12-06","officialUrl":"https://www.tnm.jp/modules/r_free_page/index.php?id=2770","posterUrl":"https://www.tnm.jp/uploads/r_exhibition/exhibition/SPECIAL_LARGE_8437.jpg","ticketUrl":"https://daitokuji2026.exhn.jp/ticket/","checkedOn":"2026-11-26","calendar":{"closedWeekdays":[1],"openDates":[],"closedDates":[],"yearEnd":{"status":"outside"}},"hours":{"open":"09:30","close":"17:00","lastEntryMinutes":30,"night":false,"changes":[{"weekdays":[5,6],"close":"20:00","night":true}]},"booking":[{"status":"시간 지정 불필요","note":"사전 예약 불필요. 혼잡 시 대기할 수 있습니다."}],"prices":{"general":2300,"students":[{"level":"University","amount":1300},{"level":"High school","amount":900},{"level":"Middle school and under","amount":0}],"note":{"en":"Junior high and younger are free.","ko":"중학생 이하는 무료입니다.","zh":"初中及以下免费。","ja":"中学生以下無料。"}}},
+      {"id":"tnm-final-fantasy-40","titleKo":"파이널 판타지 40주년 기념전: 끝나지 않는 판타지의 세계","titleJa":"ファイナルファンタジー40周年記念展","venue":"도쿄국립박물관 효케이관","area":"우에노","interests":["musicPerformingPop","japaneseCultureTraditional"],"venueTypes":["museum","national"],"start":"2027-01-08","end":"2027-04-04","officialUrl":"https://www.tnm.jp/modules/r_event/index.php?controller=dtl&cid=5&id=11799","ticketUrl":"https://www.jp.square-enix.com/ff40th/exhibition/tickets/","checkedOn":"2026-11-26","calendar":{"closedWeekdays":[1],"openDates":["2027-01-11"],"closedDates":["2027-01-12"],"yearEnd":{"status":"outside"}},"hours":{"open":"09:30","close":"17:00","lastEntryMinutes":30,"night":false,"changes":[{"weekdays":[5,6],"close":"20:00","night":true}]},"booking":[{"status":"시간 지정제","note":"날짜와 시간대를 선택해 예약합니다. 표시 요금은 1월 8일부터의 일반 요금입니다."}],"prices":{"general":3500,"students":[{"level":"High school / university","amount":2700},{"level":"Elementary / junior high","amount":1300}],"note":{"en":"Standard rates from Jan 8; student category includes university, vocational, and high-school students.","ko":"1월 8일부터의 일반 요금이며 학생은 대학·전문학교·고등학생입니다.","zh":"1月8日起适用标准价格；学生类别包括大学、专门学校及高中生。","ja":"1月8日以降の通常料金。学生は大学・専門学校・高校生です。"}}},
+      {"id":"momat-yumeji","titleKo":"다케히사 유메지: 시대를 정의한 예술가","titleJa":"竹久夢二　時代を創る表現者","venue":"도쿄국립근대미술관","area":"도쿄도심","interests":["japaneseEastAsian","designFashion","japaneseCultureTraditional"],"venueTypes":["artMuseum","national"],"start":"2026-10-23","end":"2027-01-11","officialUrl":"https://www.momat.go.jp/en/exhibitions/570","posterUrl":"https://www.momat.go.jp/wp-content/uploads/2026/06/takehisayumeji_wide-1024x670.jpg","checkedOn":"2026-11-26","calendar":{"closedWeekdays":[1],"openDates":["2026-11-30","2027-01-11"],"closedDates":["2026-11-24"],"yearEnd":{"status":"closed","from":"2026-12-28","to":"2027-01-01"}},"hours":{"open":"10:00","close":"17:00","lastEntryMinutes":30,"night":false,"changes":[{"weekdays":[5,6],"close":"20:00","night":true}]},"booking":[{"status":"현장 또는 온라인 구매","note":"사전 판매 종료 후 현장 매표 및 온라인 당일권 안내가 있습니다."}],"prices":{"general":2100,"students":[{"level":"University","amount":1200},{"level":"High school","amount":700},{"level":"15 and under","amount":0}],"note":{"en":"Advance and group rates are shown in parentheses on the official page.","ko":"공식 안내의 괄호 요금은 예매·단체 요금입니다.","zh":"官方页面括号内为预售及团体票价。","ja":"公式ページの括弧内料金は前売・団体料金です。"}}},
+      {"id":"momat-collection","titleKo":"MOMAT 컬렉션(2026.9.29~2027.1.11)","titleJa":"所蔵作品展 MOMATコレクション（2026.9.29–2027.1.11）","venue":"도쿄국립근대미술관","area":"도쿄도심","interests":["japaneseEastAsian","contemporaryInstallations"],"venueTypes":["artMuseum","national"],"start":"2026-09-29","end":"2027-01-11","officialUrl":"https://www.momat.go.jp/en/exhibitions/r8-2","posterUrl":"https://www.momat.go.jp/wp-content/uploads/2026/09/5105c79d9089d2a6d09f9aeac1491c14-1-1024x768.png","checkedOn":"2026-11-26","calendar":{"closedWeekdays":[1],"openDates":["2026-11-30","2027-01-11"],"closedDates":["2026-11-24"],"yearEnd":{"status":"closed","from":"2026-12-28","to":"2027-01-01"}},"hours":{"open":"10:00","close":"17:00","lastEntryMinutes":30,"night":false,"changes":[{"weekdays":[5,6],"close":"20:00","night":true}]},"booking":[{"status":"시간 지정 불필요","note":"현장 입장권 구매. 전시실별 입장 제한은 공식 안내를 확인하세요."}],"prices":{"general":500,"students":[{"level":"University","amount":250},{"level":"High school and under","amount":0}],"note":{"en":"Friday and Saturday evening discount after 5 p.m.: adults ¥300; university students ¥150.","ko":"금·토 17시 이후 야간 할인: 일반 300엔, 대학생 150엔.","zh":"周五、周六17时后夜间优惠：成人300日元，大学生150日元。","ja":"金・土曜17時以降の夜間割引：一般300円、大学生150円。"}}},
+      {"id":"momat-paris","titleKo":"아미 드 파리: 파리의 일본인 예술가들","titleJa":"あみ・ど・ぱり　巴里の日本人芸術家たち","venue":"도쿄국립근대미술관 4갤러리","area":"도쿄도심","interests":["japaneseEastAsian","westernClassical"],"venueTypes":["artMuseum","national"],"start":"2026-09-29","end":"2027-01-11","officialUrl":"https://www.momat.go.jp/en/exhibitions/r8-2-g4","posterUrl":"https://www.momat.go.jp/wp-content/uploads/2026/09/amie-de-paris_WEB-thumbnail_hires-1024x768.jpg","checkedOn":"2026-11-26","calendar":{"closedWeekdays":[1],"openDates":["2026-11-30","2027-01-11"],"closedDates":["2026-11-24"],"yearEnd":{"status":"closed","from":"2026-12-28","to":"2027-01-01"}},"hours":{"open":"10:00","close":"17:00","lastEntryMinutes":30,"night":false,"changes":[{"weekdays":[5,6],"close":"20:00","night":true}]},"booking":[{"status":"MOMAT 컬렉션 입장권","note":"MOMAT 컬렉션 입장권으로 관람할 수 있습니다."}],"prices":{"general":500,"students":[{"level":"University","amount":250},{"level":"High school and under","amount":0}],"note":{"en":"Friday and Saturday evening discount after 5 p.m.: adults ¥300; university students ¥150.","ko":"금·토 17시 이후 야간 할인: 일반 300엔, 대학생 150엔.","zh":"周五、周六17时后夜间优惠：成人300日元，大学生150日元。","ja":"金・土曜17時以降の夜間割引：一般300円、大学生150円。"}}},
+      {"id":"kahaku-permanent","titleKo":"상설 전시: 자연과 생명의 역사","titleJa":"常設展示「自然と生命の歴史」","venue":"국립과학박물관 우에노 본관","area":"우에노","interests":["scienceTechSpace","natureBiologyEnvironment","historyArchaeology"],"venueTypes":["museum","national","scienceMuseum"],"start":"2026-11-26","end":"2027-01-31","permanent":true,"officialUrl":"https://www.kahaku.go.jp/tenji/","posterUrl":"https://www.kahaku.go.jp/albums/1001/abm00000254.webp","sources":[{"for":"admission-hours-closures","url":"https://www.kahaku.go.jp/riyou/nyukan-annai/"}],"checkedOn":"2026-11-26","calendar":{"closedWeekdays":[1],"openDates":["2027-01-11"],"closedDates":["2027-01-12"],"yearEnd":{"status":"closed","from":"2026-12-28","to":"2027-01-01"}},"hours":{"open":"09:00","close":"17:00","lastEntryMinutes":30,"night":false,"changes":[]},"booking":[{"status":"시간 지정 불필요","note":"시간 지정 예약은 없습니다. 임시 휴관은 공식 개관 달력을 확인하세요."}],"prices":{"general":630,"students":[{"level":"University","amount":630},{"level":"High school and under","amount":0}],"note":{"en":"Adults and university students pay ¥630; elementary, junior-high, and high-school students are free.","ko":"일반·대학생 630엔, 초·중·고등학생 무료입니다.","zh":"成人与大学生630日元；小学、初中和高中生免费。","ja":"一般・大学生630円、小・中・高校生無料。"}}}
     ];
-    const AREAS = ["롯폰기","우에노","마루노우치","시로카네다이"];
-    const INTERESTS = ["회화·고전미술","현대미술·설치","디자인·건축·공예","역사·문화·과학"];
+    const AREAS = ["롯폰기","우에노","마루노우치","시로카네다이","도쿄도심"];
+    const INTERESTS = ["westernClassical","japaneseEastAsian","contemporaryInstallations","sculpture3d","photoVideoMedia","designFashion","architectureCrafts","historyArchaeology","japaneseCultureTraditional","scienceTechSpace","natureBiologyEnvironment","musicPerformingPop"];
+    const VENUE_TYPES = ["artMuseum","museum","national","prefectural","private","concert","scienceMuseum","gallery"];
+    const LOCALES = {
+      en:{brand:"Tokyo · Art Guide",season:"WINTER 2026—27",pageTitle:"Tokyo Art Exhibitions",intro:"Browse exhibitions and cultural events by date, neighborhood, and interest.<br>See what is open on your selected day.",filterTitle:"Find exhibitions and events",reset:"Reset ↺",dateLabel:"① Visit date",areaLabel:"② Neighborhood",venueLabel:"③ Venue and event type",interestLabel:"④ Interests",any:"(select any)",closedLabel:"Include closed venues",datePrompt:"Choose a visit date",invalid:"Choose a date between November 26, 2026 and January 31, 2027.",resultPrefix:"Listings for",one:"result",many:"results",none:"No listings match these filters. Try another date or selection.",noConcert:"No officially confirmed concert dates were found in this period.",open:"Open on selected date",closed:"Closed on selected date",hours:"Hours today",last:"last entry",night:"late opening",closure:"Closure",period:"Exhibition dates",permanent:"Permanent collection",booking:"Reservations",general:"General admission",student:"Student admission",priceNote:"Price notes",free:"Free",unknown:"Not confirmed",official:"Official exhibition details ↗",ticket:"Tickets and prices ↗",posterAlt:"Official exhibition image",footnote:"Ticket prices and schedules are based on official sources checked November 26, 2026 and may change. Check official links before visiting; availability is not live. No official concert schedule was confirmed for this date range.",mark:"Domi-jeon",areas:{롯폰기:"Roppongi",우에노:"Ueno",마루노우치:"Marunouchi",시로카네다이:"Shirokanedai",도쿄도심:"Central Tokyo"},types:{artMuseum:"Art museum",museum:"Museum",national:"National",prefectural:"Metropolitan / prefectural",private:"Private",concert:"Concert",scienceMuseum:"Science museum",gallery:"Gallery"},interests:{westernClassical:"Western & classical art",japaneseEastAsian:"Japanese & East Asian art",contemporaryInstallations:"Contemporary art & installations",sculpture3d:"Sculpture & 3D art",photoVideoMedia:"Photography, film & media",designFashion:"Design & fashion",architectureCrafts:"Architecture, crafts & folk art",historyArchaeology:"History & archaeology",japaneseCultureTraditional:"Japanese culture & traditional arts",scienceTechSpace:"Science, technology & space",natureBiologyEnvironment:"Nature, biology & environment",musicPerformingPop:"Music, performance & pop culture"}},
+      ko:{brand:"도쿄 · 아트 가이드",season:"2026—27 겨울",pageTitle:"도쿄 미술관 전시회",intro:"날짜, 동네, 관심 분야로 전시와 문화 행사를 찾아보세요.<br>선택한 날짜에 문을 여는 곳을 확인할 수 있습니다.",filterTitle:"전시와 행사를 찾아보세요",reset:"초기화 ↺",dateLabel:"① 방문 날짜",areaLabel:"② 동네",venueLabel:"③ 시설·행사 종류",interestLabel:"④ 관심 분야",any:"(여러 곳 선택 가능)",closedLabel:"휴관하는 곳도 함께 보기",datePrompt:"방문 날짜를 선택해 주세요",invalid:"2026년 11월 26일부터 2027년 1월 31일 사이를 선택해 주세요.",resultPrefix:"조회 결과 ·",one:"건",many:"건",none:"조건에 맞는 항목이 없습니다. 날짜나 선택을 바꿔보세요.",noConcert:"이 기간에 공식 일정이 확인된 음악회가 없습니다.",open:"선택일 개관",closed:"선택일 휴관",hours:"오늘 운영",last:"마지막 입장",night:"야간 개관",closure:"휴관 안내",period:"전시 기간",permanent:"상설 전시",booking:"예약",general:"일반 입장료",student:"학생 입장료",priceNote:"요금 안내",free:"무료",unknown:"공식 안내 미확인",official:"공식 전시 안내 보기 ↗",ticket:"티켓·요금 안내 ↗",posterAlt:"공식 전시 이미지",footnote:"입장료와 운영 일정은 2026년 11월 26일 공식 자료를 기준으로 하며 변경될 수 있습니다. 방문 전 공식 링크에서 최신 정보를 확인하세요. 잔여석은 실시간 표시하지 않으며 이 기간의 음악회 공식 일정은 확인되지 않았습니다.",mark:"도미전",areas:{롯폰기:"롯폰기",우에노:"우에노",마루노우치:"마루노우치",시로카네다이:"시로카네다이",도쿄도심:"도쿄 도심"},types:{artMuseum:"미술관",museum:"박물관",national:"국립",prefectural:"도립·도쿄도립",private:"사립",concert:"음악회",scienceMuseum:"과학관",gallery:"갤러리"},interests:{westernClassical:"서양·고전 회화",japaneseEastAsian:"일본화·동양미술",contemporaryInstallations:"현대미술·설치",sculpture3d:"조각·입체예술",photoVideoMedia:"사진·영상·미디어",designFashion:"디자인·패션",architectureCrafts:"건축·공예·민예",historyArchaeology:"역사·고고학",japaneseCultureTraditional:"일본문화·전통예술",scienceTechSpace:"과학·기술·우주",natureBiologyEnvironment:"자연·생물·환경",musicPerformingPop:"음악·공연·대중문화"}},
+      zh:{brand:"东京 · 艺术指南",season:"2026—27 冬季",pageTitle:"东京美术馆展览",intro:"按日期、街区和兴趣查找展览与文化活动。<br>查看所选日期开放的场馆。",filterTitle:"查找展览与活动",reset:"重置 ↺",dateLabel:"① 参观日期",areaLabel:"② 街区",venueLabel:"③ 场馆／活动类型",interestLabel:"④ 兴趣类别",any:"（可多选）",closedLabel:"同时显示闭馆场馆",datePrompt:"请选择参观日期",invalid:"请选择2026年11月26日至2027年1月31日。",resultPrefix:"查询日期 ·",one:"项",many:"项",none:"没有符合条件的项目。请更改日期或筛选条件。",noConcert:"此期间未找到经官方确认的音乐会日程。",open:"所选日期开放",closed:"所选日期闭馆",hours:"当日开放时间",last:"最晚入场",night:"夜间开放",closure:"闭馆信息",period:"展期",permanent:"常设展览",booking:"预约",general:"成人票价",student:"学生票价",priceNote:"票价说明",free:"免费",unknown:"官方信息未确认",official:"官方展览详情 ↗",ticket:"门票与价格 ↗",posterAlt:"官方展览图片",footnote:"票价和开放时间依据截至2026年11月26日的官方信息，可能变更。请在访问前查看官方链接；不提供实时余票信息。此日期范围内未确认到官方音乐会日程。",mark:"鲷鱼煎饼",areas:{롯폰기:"六本木",우에노:"上野",마루노우치:"丸之内",시로카네다이:"白金台",도쿄도심:"东京市中心"},types:{artMuseum:"美术馆",museum:"博物馆",national:"国立",prefectural:"都立／地方公立",private:"私立",concert:"音乐会",scienceMuseum:"科学馆",gallery:"画廊"},interests:{westernClassical:"西方与古典绘画",japaneseEastAsian:"日本画与东亚美术",contemporaryInstallations:"当代艺术与装置",sculpture3d:"雕塑与立体艺术",photoVideoMedia:"摄影、影像与媒体",designFashion:"设计与时尚",architectureCrafts:"建筑、工艺与民艺",historyArchaeology:"历史与考古",japaneseCultureTraditional:"日本文化与传统艺术",scienceTechSpace:"科学、技术与宇宙",natureBiologyEnvironment:"自然、生物与环境",musicPerformingPop:"音乐、表演与流行文化"}},
+      ja:{brand:"東京 · アートガイド",season:"2026—27 冬",pageTitle:"東京の美術館・展覧会",intro:"日付、エリア、興味分野から展覧会や文化イベントを探せます。<br>選択日に開館している施設を確認できます。",filterTitle:"展覧会・イベントを探す",reset:"リセット ↺",dateLabel:"① 訪問日",areaLabel:"② エリア",venueLabel:"③ 施設・イベント種別",interestLabel:"④ 興味分野",any:"（複数選択可）",closedLabel:"休館施設も表示",datePrompt:"訪問日を選択してください",invalid:"2026年11月26日から2027年1月31日までの日付を選択してください。",resultPrefix:"検索結果 ·",one:"件",many:"件",none:"条件に一致する項目がありません。日付や条件を変更してください。",noConcert:"この期間に公式確認できるコンサート日程はありません。",open:"選択日に開館",closed:"選択日に休館",hours:"当日の開館時間",last:"最終入館",night:"夜間開館",closure:"休館案内",period:"会期",permanent:"常設展示",booking:"予約",general:"一般料金",student:"学生料金",priceNote:"料金補足",free:"無料",unknown:"公式情報未確認",official:"公式展覧会案内 ↗",ticket:"チケット・料金 ↗",posterAlt:"公式展覧会画像",footnote:"料金・開館情報は2026年11月26日時点の公式情報に基づき、変更される場合があります。来館前に公式ページをご確認ください。空席状況はリアルタイム表示ではありません。この期間の公式コンサート日程は確認できていません。",mark:"鯛のジョン",areas:{롯폰기:"六本木",우에노:"上野",마루노우치:"丸の内",시로카네다이:"白金台",도쿄도심:"東京中心部"},types:{artMuseum:"美術館",museum:"博物館",national:"国立",prefectural:"都立・公立",private:"私立",concert:"コンサート",scienceMuseum:"科学館",gallery:"ギャラリー"},interests:{westernClassical:"西洋・古典絵画",japaneseEastAsian:"日本画・東洋美術",contemporaryInstallations:"現代美術・インスタレーション",sculpture3d:"彫刻・立体芸術",photoVideoMedia:"写真・映像・メディア",designFashion:"デザイン・ファッション",architectureCrafts:"建築・工芸・民芸",historyArchaeology:"歴史・考古学",japaneseCultureTraditional:"日本文化・伝統芸術",scienceTechSpace:"科学・技術・宇宙",natureBiologyEnvironment:"自然・生物・環境",musicPerformingPop:"音楽・舞台芸術・ポップカルチャー"}}
+    };
+    const CONTENT = {
+      "nact-louvre-renaissance":{title:{en:"Louvre: Renaissance",zh:"卢浮宫：文艺复兴"},venue:{en:"The National Art Center, Tokyo",zh:"国立新美术馆"},types:["artMuseum","national"],interests:["westernClassical"],adult:2400,student:[["University",1400],["High school",1000],["Middle school and under",0]],priceNote:{en:"Advance prices shown; day-ticket prices are not listed separately. Student ID required.",ko:"표시 요금은 예매 요금이며 당일권 금액은 별도 안내되지 않았습니다. 학생증 필요.",zh:"所示为预售价格；页面未单独列出当日票价。学生需出示学生证。",ja:"表示は前売料金です。当日券の料金は別途記載されていません。学生証が必要です。"}},
+      "mori-mariko-sansan":{title:{en:"Mariko Mori: All That Shines",zh:"森万里子：灿灿"},venue:{en:"Mori Art Museum",zh:"森美术馆"},types:["artMuseum","private"],interests:["contemporaryInstallations"],adult:{min:2600,max:3000},student:[["High school / university",{min:1600,max:1800}]],priceNote:{en:"Weekday: ¥2,600 online / ¥2,800 counter. Weekend and holiday: ¥2,800 / ¥3,000. Dec 30–31 use holiday rates. Junior high and under free.",ko:"평일 온라인 2,600엔·창구 2,800엔, 주말·공휴일 온라인 2,800엔·창구 3,000엔. 12월 30~31일은 주말 요금, 중학생 이하는 무료.",zh:"工作日线上2,600日元／柜台2,800日元；周末及节假日线上2,800日元／柜台3,000日元。12月30、31日按节假日价格；初中及以下免费。",ja:"平日オンライン2,600円／窓口2,800円、土日祝オンライン2,800円／窓口3,000円。12月30・31日は土日祝料金、中学生以下無料。"}},
+      "tobikan-orsay":{title:{en:"What a Wonderful World: Musée d’Orsay Collection",zh:"奥赛博物馆藏品展：活在当下的喜悦"},venue:{en:"Tokyo Metropolitan Art Museum",zh:"东京都美术馆"},types:["artMuseum","prefectural"],interests:["westernClassical","sculpture3d","architectureCrafts"],adult:2400,student:[["University",1300],["High school and under",0]],priceNote:{en:"University/vocational students are free on weekdays Dec 8–18; high school and under are free.",ko:"12월 8~18일 평일 대학·전문학교생 무료이며, 고등학생 이하는 무료입니다.",zh:"12月8日至18日工作日大学／专门学校生免费；高中及以下免费。",ja:"12月8日～18日の平日は大学・専門学校生無料、高校生以下無料。"}},
+      "tobikan-archives-100":{title:{en:"100 Years of the Tokyo Metropolitan Art Museum",zh:"东京都美术馆百年档案展"},venue:{en:"Tokyo Metropolitan Art Museum · Gallery B",zh:"东京都美术馆 B展厅"},types:["artMuseum","prefectural"],interests:["historyArchaeology"],adult:0,student:[["All students",0]],priceNote:{en:"Admission is free for all visitors.",ko:"모든 관람객 무료입니다.",zh:"所有观众免费。",ja:"すべての来館者が無料です。"}},
+      "station-astrup":{title:{en:"Nikolai Astrup: Creating the Garden",zh:"尼古拉·阿斯特鲁普：创造花园"},venue:{en:"Tokyo Station Gallery",zh:"东京站画廊"},types:["gallery","private"],interests:["westernClassical","architectureCrafts"],adult:1800,student:[["High school / university",1300],["Middle school and under",0]],priceNote:{en:"High school and university students need student ID; junior high and younger are free.",ko:"고등·대학생 학생증 필요, 중학생 이하는 무료입니다.",zh:"高中及大学生需出示学生证；初中及以下免费。",ja:"高校・大学生は学生証が必要、中学生以下無料。"}},
+      "teien-marimekko":{title:{en:"Marimekko: Art of Printmaking",zh:"Marimekko：印花艺术"},venue:{en:"Tokyo Metropolitan Teien Art Museum",zh:"东京都庭园美术馆"},types:["artMuseum","prefectural"],interests:["designFashion","contemporaryInstallations"],adult:1400,student:[],priceNote:{en:"The official table lists ¥1,120 and ¥700 in addition to the adult rate, but the accessible table does not identify those categories. Student eligibility is unconfirmed.",ko:"공식 표에는 일반 요금 외에 1,120엔·700엔도 있으나 확인 가능한 표에 대상 구분이 없습니다. 학생 요금 해당 여부는 미확인입니다.",zh:"官方票价表除成人票外还列有1,120日元和700日元，但可读取的表格未标明类别；是否为学生票尚未确认。",ja:"公式表には一般料金以外に1,120円・700円も記載されていますが、閲覧できる表では対象区分が不明です。学生料金かどうかは未確認です。"}},
+      "teien-lithuania":{title:{en:"Lithuanian Handicrafts: Love Spun, Prayers Carved",zh:"编织爱意，刻下祈祷：立陶宛手工艺"},venue:{en:"Tokyo Metropolitan Teien Art Museum",zh:"东京都庭园美术馆"},types:["artMuseum","prefectural"],interests:["architectureCrafts","japaneseCultureTraditional","historyArchaeology"],adult:1400,student:[["University",1120],["High school",700],["Middle school and under",0]],priceNote:{en:"University and high-school students need student ID; junior high and under are free.",ko:"대학·고등학생은 학생증 필요, 중학생 이하는 무료입니다.",zh:"大学／高中生需出示学生证；初中及以下免费。",ja:"大学・高校生は学生証が必要、中学生以下無料。"}},
+      "nact-shojo-manga":{title:{en:"Shojo Manga Infinity: Three Artists",zh:"少女漫画·无限：三位漫画家"},venue:{en:"The National Art Center, Tokyo",zh:"国立新美术馆"},types:["artMuseum","national"],interests:["japaneseCultureTraditional","musicPerformingPop"],adult:2200,student:[["University",1000],["High school",500],["Middle school and under",0]],priceNote:{en:"Advance rates shown; day-ticket prices are not listed separately. Student ID required.",ko:"예매 요금이며 당일권은 별도 안내되지 않았습니다. 학생증이 필요합니다.",zh:"所示为预售价格，未单独列出当日票价。学生需出示学生证。",ja:"前売料金です。当日券の料金は別途記載されていません。学生証が必要です。"}},
+      "macg-haikyu":{title:{en:"Haikyu!! Exhibition: The Challengers",zh:"《排球少年!!》展：挑战者们"},venue:{en:"Mori Arts Center Gallery",zh:"森美术中心画廊"},types:["gallery","private"],interests:["musicPerformingPop"],adult:2200,student:[["High school",1400],["Elementary / junior high",900]],priceNote:{en:"Children age 6 and under may enter free with an adult ticket holder under stated conditions.",ko:"만 6세 이하는 성인 티켓 소지자 동반 시 조건에 따라 무료입니다.",zh:"符合条件时，6岁及以下儿童可由持票成人免费陪同。",ja:"条件により6歳以下はチケット所持者の同伴で無料です。"}},
+      "tnm-hiroshige":{title:{en:"Hiroshige: Edo through a New Lens",zh:"歌川广重：江户新视角"},venue:{en:"Tokyo National Museum · Honkan",zh:"东京国立博物馆本馆"},types:["museum","national"],interests:["japaneseEastAsian","historyArchaeology"],adult:1500,student:[["University",500],["High school and under",0]],priceNote:{en:"University ¥500; high school and under free.",ko:"대학생 500엔, 고등학생 이하는 무료입니다.",zh:"大学生500日元；高中及以下免费。",ja:"大学生500円、高校生以下無料。"}},
+      "tnm-daitokuji":{title:{en:"Daitokuji: Japan’s Unparalleled Zen Monastery",zh:"大德寺：日本无双禅苑"},venue:{en:"Tokyo National Museum · Heiseikan",zh:"东京国立博物馆平成馆"},types:["museum","national"],interests:["japaneseCultureTraditional","historyArchaeology"],adult:2300,student:[["University",1300],["High school",900],["Middle school and under",0]],priceNote:{en:"Junior high and younger are free.",ko:"중학생 이하는 무료입니다.",zh:"初中及以下免费。",ja:"中学生以下無料。"}},
+      "tnm-final-fantasy-40":{title:{en:"Final Fantasy 40th Anniversary Exhibition",zh:"最终幻想40周年纪念展"},venue:{en:"Tokyo National Museum · Hyokeikan",zh:"东京国立博物馆表庆馆"},types:["museum","national"],interests:["musicPerformingPop","japaneseCultureTraditional"],adult:3500,student:[["High school / university",2700],["Elementary / junior high",1300]],priceNote:{en:"Standard rates from Jan 8; student category includes university, vocational, and high-school students.",ko:"1월 8일부터의 일반 요금이며 학생은 대학·전문학교·고등학생입니다.",zh:"1月8日起适用标准价格；学生类别包括大学、专门学校及高中生。",ja:"1月8日以降の通常料金。学生は大学・専門学校・高校生です。"}},
+      "kahaku-permanent":{title:{en:"Permanent Exhibitions: Nature and Life",zh:"常设展：自然与生命史"},venue:{en:"National Museum of Nature and Science · Ueno",zh:"国立科学博物馆上野本馆"},types:["museum","national","scienceMuseum"],interests:["scienceTechSpace","natureBiologyEnvironment","historyArchaeology"],adult:630,student:[["University",630],["High school and under",0]],priceNote:{en:"Adults and university students pay ¥630; elementary, junior-high, and high-school students are free.",ko:"일반·대학생 630엔, 초·중·고등학생 무료입니다.",zh:"成人与大学生630日元；小学、初中和高中生免费。",ja:"一般・大学生630円、小・中・高校生無料。"}},
+      "momat-yumeji":{title:{en:"Takehisa Yumeji: An Artist Who Defined His Era",zh:"竹久梦二：定义时代的艺术家"},venue:{en:"The National Museum of Modern Art, Tokyo",zh:"东京国立近代美术馆"},types:["artMuseum","national"],interests:["japaneseEastAsian","designFashion","japaneseCultureTraditional"],adult:2100,student:[["University",1200],["High school",700],["15 and under",0]],priceNote:{en:"Advance and group rates are shown in parentheses on the official page.",ko:"공식 안내의 괄호 요금은 예매·단체 요금입니다.",zh:"官方页面括号内为预售及团体票价。",ja:"公式ページの括弧内料金は前売・団体料金です。"}},
+      "momat-collection":{title:{en:"MOMAT Collection (Sep 29, 2026–Jan 11, 2027)",zh:"东京国立近代美术馆藏品展（2026.9.29–2027.1.11）"},venue:{en:"The National Museum of Modern Art, Tokyo",zh:"东京国立近代美术馆"},types:["artMuseum","national"],interests:["japaneseEastAsian","contemporaryInstallations"],adult:500,student:[["University",250],["High school and under",0]],priceNote:{en:"Friday and Saturday evening discount after 5 p.m.: adults ¥300; university students ¥150.",ko:"금·토 17시 이후 야간 할인: 일반 300엔, 대학생 150엔.",zh:"周五、周六17时后夜间优惠：成人300日元，大学生150日元。",ja:"金・土曜17時以降の夜間割引：一般300円、大学生150円。"}},
+      "momat-paris":{title:{en:"Amis de Paris: Japanese Artists in Paris",zh:"巴黎之友：在巴黎的日本艺术家"},venue:{en:"The National Museum of Modern Art, Tokyo · Gallery 4",zh:"东京国立近代美术馆·第4展厅"},types:["artMuseum","national"],interests:["japaneseEastAsian","westernClassical"],adult:500,student:[["University",250],["High school and under",0]],priceNote:{en:"Friday and Saturday evening discount after 5 p.m.: adults ¥300; university students ¥150.",ko:"금·토 17시 이후 야간 할인: 일반 300엔, 대학생 150엔.",zh:"周五、周六17时后夜间优惠：成人300日元，大学生150日元。",ja:"金・土曜17時以降の夜間割引：一般300円、大学生150円。"}},
+    };
+    const STUDENT_LABELS = {
+      en:{"University":"University","High school":"High school","High school / university":"High school / university","High school and under":"High school and under","Middle school and under":"Middle school and under","Elementary / junior high":"Elementary / junior high","All students":"All students","Student tier not labeled":"Student tier not labeled"},
+      ko:{"University":"대학생","High school":"고등학생","High school / university":"고등·대학생","High school and under":"고등학생 이하","Middle school and under":"중학생 이하","Elementary / junior high":"초·중학생","All students":"모든 학생","Student tier not labeled":"대상 미표기 학생 요금"},
+      zh:{"University":"大学生","High school":"高中生","High school / university":"高中／大学生","High school and under":"高中及以下","Middle school and under":"初中及以下","Elementary / junior high":"小学／初中生","All students":"所有学生","Student tier not labeled":"未标注适用对象的学生票"},
+      ja:{"University":"大学生","High school":"高校生","High school / university":"高校・大学生","High school and under":"高校生以下","Middle school and under":"中学生以下","Elementary / junior high":"小・中学生","All students":"全学生","Student tier not labeled":"対象未記載の学生料金"}
+    };
+    const BOOKING_STATUS = {
+      en:{"시간 지정 불필요":"No timed reservation required","시간 지정제":"Timed reservation system","시간 지정 예약제":"Timed reservation system","시간 지정권 필요":"Timed ticket required","미확인":"Unconfirmed"},
+      ko:{"시간 지정 불필요":"시간 지정 예약 불필요","시간 지정제":"시간 지정제","시간 지정 예약제":"시간 지정 예약제","시간 지정권 필요":"시간 지정권 필요","미확인":"미확인"},
+      zh:{"시간 지정 불필요":"无需预约时段","시간 지정제":"指定时段制","시간 지정 예약제":"指定时段预约制","시간 지정권 필요":"需要指定时段门票","미확인":"未确认"},
+      ja:{"시간 지정 불필요":"時間指定予約不要","시간 지정제":"時間指定制","시간 지정 예약제":"時間指定予約制","시간 지정권 필요":"時間指定券が必要","미확인":"未確認"}
+    };
+    Object.assign(BOOKING_STATUS.en,{"현장 또는 온라인 구매":"Buy on site or online","MOMAT 컬렉션 입장권":"MOMAT Collection ticket"});
+    Object.assign(BOOKING_STATUS.ko,{"현장 또는 온라인 구매":"현장 또는 온라인 구매","MOMAT 컬렉션 입장권":"MOMAT 컬렉션 입장권"});
+    Object.assign(BOOKING_STATUS.zh,{"현장 또는 온라인 구매":"现场或在线购票","MOMAT 컬렉션 입장권":"MOMAT馆藏展门票"});
+    Object.assign(BOOKING_STATUS.ja,{"현장 또는 온라인 구매":"窓口またはオンラインで購入","MOMAT 컬렉션 입장권":"MOMATコレクション観覧券"});
+    STUDENT_LABELS.en["15 and under"]="15 and under";
+    STUDENT_LABELS.ko["15 and under"]="15세 이하";
+    STUDENT_LABELS.zh["15 and under"]="15岁及以下";
+    STUDENT_LABELS.ja["15 and under"]="15歳以下";
+    const YEAR_END_LABEL={en:"Year-end closure",ko:"연말연시 휴관",zh:"年末年初闭馆",ja:"年末年始休館"};
+    const YEAR_END_VALUE={
+      open:{en:"Open throughout the exhibition period",ko:"전시 기간 중 무휴",zh:"展期内开放",ja:"会期中は休館日なし"},
+      outside:{en:"No year-end closure falls within the exhibition dates",ko:"전시 기간에 연말연시가 포함되지 않습니다",zh:"展期不涵盖年末年初",ja:"会期に年末年始休館は含まれません"}
+    };
+    const LANGUAGE_NAV_LABEL={en:"Language",ko:"언어",zh:"语言",ja:"言語"};
+    const VENUE_JA={
+      "nact-louvre-renaissance":"国立新美術館","mori-mariko-sansan":"森美術館","tobikan-orsay":"東京都美術館 企画展示室","tobikan-archives-100":"東京都美術館 ギャラリーB","station-astrup":"東京ステーションギャラリー","teien-marimekko":"東京都庭園美術館","teien-lithuania":"東京都庭園美術館","nact-shojo-manga":"国立新美術館","macg-haikyu":"森アーツセンターギャラリー","tnm-hiroshige":"東京国立博物館 本館","tnm-daitokuji":"東京国立博物館 平成館","tnm-final-fantasy-40":"東京国立博物館 表慶館","kahaku-permanent":"国立科学博物館 上野本館"
+    };
+    const BOOKING_NOTES = {
+      en:{"nact-louvre-renaissance":"General admission through Dec 6; timed tickets required Dec 7–13.", "mori-mariko-sansan":"Timed slots; walk-up entry only if seats remain.", "tobikan-orsay":"No time slot for general admission; queues may occur.", "tobikan-archives-100":"Free exhibition; general admission reservation rules are not stated.", "station-astrup":"Online or on-site tickets; no timed entry stated.", "teien-marimekko":"Timed reservation required; same-day tickets are limited.", "teien-lithuania":"Timed reservation required; free-admission visitors do not need to book.", "nact-shojo-manga":"Official page lists advance and on-site sales; no timed reservation is stated.", "macg-haikyu":"Timed entry; eplus advance sales only, no venue ticket sales.", "tnm-hiroshige":"No reservation required; ticket counter may have queues.", "tnm-daitokuji":"No advance reservation required; queues may occur.", "tnm-final-fantasy-40":"Choose a date and time slot.", "kahaku-permanent":"No timed reservation; check official opening calendar for exceptions."},
+      ko:{"nact-louvre-renaissance":"12월 6일까지 일반 입장권, 7~13일은 시간 지정권이 필요합니다.", "mori-mariko-sansan":"회차 잔여석이 있을 때만 예약 없이 입장할 수 있습니다.", "tobikan-orsay":"일반 입장은 시간 지정이 필요하지 않으며 혼잡 시 대기할 수 있습니다.", "tobikan-archives-100":"무료 전시이나 일반 관람 예약 여부는 공식 안내에 명시되지 않았습니다.", "station-astrup":"온라인 또는 현장 구매 가능하며 시간 지정은 명시되지 않았습니다.", "teien-marimekko":"시간 지정 예약이 필요하며 당일권은 한정 수량입니다.", "teien-lithuania":"시간 지정 예약제이며 무료 관람 대상자는 예약하지 않아도 됩니다.", "nact-shojo-manga":"사전·현장 판매가 있으며 시간 지정 여부는 명시되지 않았습니다.", "macg-haikyu":"시간 지정 입장입니다. 이플러스 사전 판매만 있으며 현장 판매는 없습니다.", "tnm-hiroshige":"예약 불필요. 혼잡 시 매표소에서 대기할 수 있습니다.", "tnm-daitokuji":"사전 예약 불필요. 혼잡 시 대기할 수 있습니다.", "tnm-final-fantasy-40":"날짜와 시간대를 선택해 예약합니다.", "kahaku-permanent":"시간 지정 예약은 없습니다. 임시 휴관은 공식 개관 달력을 확인하세요."},
+      zh:{"nact-louvre-renaissance":"截至12月6日可使用普通入场券；12月7日至13日需指定时段门票。", "mori-mariko-sansan":"需选择时段；仅在该场次有余票时可现场入场。", "tobikan-orsay":"普通门票无需指定时段；拥挤时可能需要排队。", "tobikan-archives-100":"展览免费，但官方页面未说明普通参观是否需要预约。", "station-astrup":"可线上或现场购票；未说明需要指定时段。", "teien-marimekko":"需要指定时段预约；当日票数量有限。", "teien-lithuania":"指定时段预约制；符合免费条件的访客无需预约。", "nact-shojo-manga":"官方页面列有预售和现场售票，未说明指定时段预约。", "macg-haikyu":"指定时段入场；仅通过eplus预售，不设现场售票。", "tnm-hiroshige":"无需预约；拥挤时售票柜台可能排队。", "tnm-daitokuji":"无需提前预约；拥挤时可能需要排队。", "tnm-final-fantasy-40":"需选择日期和时段预约。", "kahaku-permanent":"无需指定时段预约；临时闭馆请查看官方开放日历。"},
+      ja:{"nact-louvre-renaissance":"12月6日までは通常券、7日～13日は時間指定券が必要です。", "mori-mariko-sansan":"時間指定制です。空きがある場合のみ予約なしで当日入場できます。", "tobikan-orsay":"一般入場は時間指定不要です。混雑時は待つ場合があります。", "tobikan-archives-100":"無料展ですが、一般観覧の予約要否は公式案内に記載がありません。", "station-astrup":"オンラインまたは窓口で購入できます。時間指定の記載はありません。", "teien-marimekko":"時間指定予約制です。当日券は少数です。", "teien-lithuania":"時間指定予約制です。無料対象者は予約不要です。", "nact-shojo-manga":"前売券と当日窓口の記載がありますが、時間指定の記載はありません。", "macg-haikyu":"時間指定制です。イープラス販売のみで、会場販売はありません。", "tnm-hiroshige":"予約不要です。混雑時は窓口で待つ場合があります。", "tnm-daitokuji":"事前予約不要です。混雑時は待つ場合があります。", "tnm-final-fantasy-40":"日付と時間帯を選んで予約します。", "kahaku-permanent":"時間指定予約は不要です。臨時休館は公式開館カレンダーをご確認ください。"}
+    };
+    DATA.forEach((event)=>{
+      const details=CONTENT[event.id];
+      event.meta=details;
+    });
     const $ = (id) => document.getElementById(id);
     const dateInput = $("visitDate");
-    const fmtDate = (date) => `${Number(date.slice(0,4))}년 ${Number(date.slice(5,7))}월 ${Number(date.slice(8,10))}일`;
+    const fmtDate = (date) => new Intl.DateTimeFormat(locale==="zh"?"zh-Hans":locale,{timeZone:"Asia/Tokyo",year:"numeric",month:"short",day:"numeric"}).format(new Date(`${date}T12:00:00+09:00`));
     const inRange = (date, from, to) => (!from || date >= from) && (!to || date <= to);
-    function makeChips(target, values, prefix) {
-      $(target).innerHTML = values.map((value, i) => `<label class="chip"><input type="checkbox" value="${value}" id="${prefix}-${i}"><span>${value}</span></label>`).join("");
+    let locale = "en";
+    function t(key) { return LOCALES[locale][key]; }
+    function label(group, key) { return LOCALES[locale][group][key] || key; }
+    function makeChips(target, values, prefix, group, selected=[]) {
+      const container=$(target);
+      container.replaceChildren();
+      values.forEach((value,i)=>{
+        const chip=document.createElement("label"); chip.className="chip";
+        const input=document.createElement("input"); input.type="checkbox"; input.id=`${prefix}-${i}`; input.value=value; input.checked=selected.includes(value);
+        const span=text("span",label(group,value));
+        chip.append(input,span); container.append(chip);
+      });
     }
-    makeChips("areas", AREAS, "area");
-    makeChips("interests", INTERESTS, "interest");
+    function selectedValues(target) {
+      return [...document.querySelectorAll(`#${target} input:checked`)].map((input)=>input.value);
+    }
+    function applyLanguage() {
+      const selectedAreas=selectedValues("areas"),selectedTypes=selectedValues("venueTypes"),selectedInterests=selectedValues("interests");
+      const words=LOCALES[locale];
+      document.documentElement.lang=locale==="zh"?"zh-Hans":locale;
+      document.title=words.pageTitle;
+      document.querySelector(".languages").setAttribute("aria-label",LANGUAGE_NAV_LABEL[locale]);
+      $("brandName").textContent=words.brand;
+      $("season").textContent=words.season;
+      $("pageTitle").textContent=words.pageTitle;
+      $("intro").innerHTML=words.intro;
+      $("filterTitle").textContent=words.filterTitle;
+      $("reset").textContent=words.reset;
+      $("dateLabel").textContent=words.dateLabel;
+      $("areaLabel").innerHTML=`${words.areaLabel} <span style="font-weight:400;color:#64716b">${words.any}</span>`;
+      $("venueTypeLabel").innerHTML=`${words.venueLabel} <span style="font-weight:400;color:#64716b">${words.any}</span>`;
+      $("interestLabel").innerHTML=`${words.interestLabel} <span style="font-weight:400;color:#64716b">${words.any}</span>`;
+      $("closedLabel").textContent=words.closedLabel;
+      $("footnote").textContent=words.footnote;
+      document.querySelector(".scroll-mark-label").textContent=words.mark;
+      $("scrollMark").setAttribute("aria-label",words.mark);
+      document.querySelector("#scrollMark svg").setAttribute("aria-label",words.mark);
+      document.querySelectorAll(".language-button").forEach((button)=>button.setAttribute("aria-pressed",String(button.dataset.lang===locale)));
+      makeChips("areas",AREAS,"area","areas",selectedAreas);
+      makeChips("venueTypes",VENUE_TYPES,"type","types",selectedTypes);
+      makeChips("interests",INTERESTS,"interest","interests",selectedInterests);
+      render();
+    }
     function operating(date, exhibition) {
       const {calendar} = exhibition;
       const weekday = new Date(`${date}T12:00:00+09:00`).getUTCDay() || 7;
-      if (calendar.closedDates.includes(date)) return {open:false, reason:"이 날짜는 특별 휴관일입니다."};
-      if (calendar.openDates.includes(date)) return {open:true, reason:"정기 휴관일이지만 특별 개관합니다."};
+      if (calendar.closedDates.includes(date)) return {open:false, reason:t("closure")};
+      if (calendar.openDates.includes(date)) return {open:true, reason:t("open")};
       if (calendar.yearEnd.status === "closed" && inRange(date, calendar.yearEnd.from, calendar.yearEnd.to))
-        return {open:false, reason:calendar.yearEnd.note || "연말연시 휴관 기간입니다."};
-      if (calendar.closedWeekdays.includes(weekday)) return {open:false, reason:"정기 휴관일입니다."};
+        return {open:false, reason:t("closure")};
+      if (calendar.yearEnd.status === "unknown" && inRange(date, calendar.yearEnd.from, calendar.yearEnd.to))
+        return {open:false,unknown:true,reason:t("unknown")};
+      if (calendar.closedWeekdays.includes(weekday)) return {open:false, reason:t("closure")};
       return {open:true, reason:""};
     }
     function schedule(date, exhibition) {
@@ -182,67 +313,97 @@
       element.textContent = value;
       return element;
     }
+    function formatYen(value) {
+      if (value===0) return t("free");
+      const format=(amount)=>`¥${new Intl.NumberFormat(locale==="zh"?"zh-Hans":locale,{maximumFractionDigits:0}).format(amount)}`;
+      if (Array.isArray(value)) return value.map(format).join(" / ");
+      if (typeof value==="number") return format(value);
+      return `${format(value.min)}–${format(value.max)}`;
+    }
     function render() {
-      const date = dateInput.value;
-      const result = $("results");
+      const date=dateInput.value,result=$("results");
       result.replaceChildren();
-      if (!date) { $("resultTitle").textContent="방문 날짜를 선택해 주세요"; $("resultCount").textContent=""; return; }
-      if (date < dateInput.min || date > dateInput.max) {
-        $("resultTitle").textContent="조회 기간을 확인해 주세요";
-        $("resultCount").textContent="";
-        result.append(text("p","2026년 12월 1일에서 2027년 1월 31일 사이의 날짜를 선택해 주세요.","empty"));
-        return;
+      if (!date) { $("resultTitle").textContent=t("datePrompt"); $("resultCount").textContent=""; return; }
+      if (date<dateInput.min||date>dateInput.max) {
+        $("resultTitle").textContent=t("invalid"); $("resultCount").textContent="";
+        result.append(text("p",t("invalid"),"empty")); return;
       }
-      $("resultTitle").textContent=`${fmtDate(date)}의 전시`;
-      const selectedAreas = [...document.querySelectorAll("#areas input:checked")].map((node)=>node.value);
-      const selectedInterests = [...document.querySelectorAll("#interests input:checked")].map((node)=>node.value);
-      const candidates = DATA.filter((exhibition) => {
-        if (date < exhibition.start || date > exhibition.end) return false;
-        if (selectedAreas.length && !selectedAreas.includes(exhibition.area)) return false;
-        if (selectedInterests.length && !exhibition.interests.some((interest)=>selectedInterests.includes(interest))) return false;
+      $("resultTitle").textContent=`${t("resultPrefix")} ${fmtDate(date)}`;
+      const selectedAreas=selectedValues("areas"),selectedTypes=selectedValues("venueTypes"),selectedInterests=selectedValues("interests");
+      const candidates=DATA.filter((event)=>{
+        if (date<event.start||date>event.end) return false;
+        if (selectedAreas.length&&!selectedAreas.includes(event.area)) return false;
+        if (selectedTypes.length&&!event.venueTypes.some((type)=>selectedTypes.includes(type))) return false;
+        if (selectedInterests.length&&!event.interests.some((interest)=>selectedInterests.includes(interest))) return false;
         return true;
-      }).map((exhibition)=>({exhibition, day:operating(date,exhibition)}))
-        .filter(({day})=>day.open || $("includeClosed").checked)
-        .sort((a,b)=>a.exhibition.end.localeCompare(b.exhibition.end));
-      $("resultCount").textContent=`${candidates.length}건`;
-      if (!candidates.length) {
-        result.append(text("p","조건에 맞는 전시가 없습니다. 날짜나 필터를 바꿔보세요.","empty"));
-        return;
+      }).map((event)=>({event,day:operating(date,event)}))
+        .filter(({day})=>day.open||day.unknown||$("includeClosed").checked)
+        .sort((a,b)=>a.event.end.localeCompare(b.event.end));
+      const count=candidates.length;
+      $("resultCount").textContent=`${new Intl.NumberFormat(locale==="zh"?"zh-Hans":locale).format(count)} ${count===1?t("one"):t("many")}`;
+      if (!count) {
+        result.append(text("p",selectedTypes.includes("concert")?t("noConcert"):t("none"),"empty")); return;
       }
-      for (const {exhibition:e,day} of candidates) {
-        const card=document.createElement("article");
+      for (const {event:e,day} of candidates) {
+        const content=e.meta,card=document.createElement("article");
         card.className=`card${day.open?"":" closed"}`;
         const top=document.createElement("div"); top.className="card-top";
-        top.append(text("span",e.area,"area"),text("span",day.open?"관람 가능":"휴관","status"+(day.open?"":" closed-label")));
-        card.append(top,text("h3",e.titleKo),text("p",e.titleJa,"title-ja"),text("p",e.venue,"venue"));
+        top.append(text("span",label("areas",e.area),"area"),text("span",day.open?t("open"):day.unknown?t("unknown"):t("closed"),"status"+(day.open?"":" closed-label")));
+        const title=content.title[locale]||(locale==="ko"?e.titleKo:e.titleJa);
+        const venue=content.venue[locale]||(locale==="ja"?VENUE_JA[e.id]:e.venue);
+          const heading=document.createElement("div");heading.className="card-heading";
+          if(e.posterUrl){const poster=document.createElement("img");poster.className="poster";poster.addEventListener("error",()=>poster.remove());poster.src=e.posterUrl;poster.alt=`${title} — ${t("posterAlt")}`;poster.loading="lazy";poster.decoding="async";heading.append(poster);}
+          heading.append(text("h3",title));
+          card.append(top,heading,text("p",locale==="ja"?(content.title.en||e.titleKo):e.titleJa,"title-ja"),text("p",venue,"venue"));
         const tags=document.createElement("div"); tags.className="tags";
-        e.interests.forEach((interest)=>tags.append(text("span",interest,"tag")));
+        e.venueTypes.forEach((type)=>tags.append(text("span",label("types",type),"tag")));
+        e.interests.forEach((interest)=>tags.append(text("span",label("interests",interest),"tag")));
         card.append(tags);
-        const detailList=document.createElement("dl"); detailList.className="details";
-        const addDetail=(label,value,warning=false)=>{
-          const row=document.createElement("div"); row.className="detail"+(warning?" warning":"");
-          row.append(text("dt",label),text("dd",value)); detailList.append(row);
-        };
+        const details=document.createElement("dl"); details.className="details";
+        const add=(name,value,warning=false)=>{const row=document.createElement("div");row.className="detail"+(warning?" warning":"");row.append(text("dt",name),text("dd",value));details.append(row);};
         if (day.open) {
           const hours=schedule(date,e);
-          addDetail("오늘 운영",`${hours.open}–${hours.close} · 마지막 입장 ${hours.lastEntry}${hours.night?" · 야간 개관":""}${day.reason?` · ${day.reason}`:""}`);
-        } else addDetail("휴관 안내",day.reason,true);
-        addDetail("전시 기간",`${fmtDate(e.start)} – ${fmtDate(e.end)} 종료`);
-        addDetail("예약",booking(date,e).status+(booking(date,e).note?` · ${booking(date,e).note}`:""),booking(date,e).status==="미확인");
-        if (e.calendar.yearEnd.status==="closed") addDetail("연말연시",`${fmtDate(e.calendar.yearEnd.from)}–${fmtDate(e.calendar.yearEnd.to)} 휴관`);
-        const link=document.createElement("a"); link.className="official"; link.href=e.officialUrl; link.target="_blank"; link.rel="noopener noreferrer"; link.textContent="공식 전시 안내 보기 ↗";
-        card.append(detailList,link); result.append(card);
+          add(t("hours"),`${hours.open}–${hours.close} · ${t("last")} ${hours.lastEntry}${hours.night?` · ${t("night")}`:""}`);
+        } else add(t("closure"),day.reason,true);
+        add(e.id==="kahaku-permanent"?t("permanent"):t("period"),e.id==="kahaku-permanent"?t("permanent"):`${fmtDate(e.start)} – ${fmtDate(e.end)}`);
+        const reservation=booking(date,e);
+        const reservationStatus=BOOKING_STATUS[locale][reservation.status] || t("unknown");
+        const reservationNote=BOOKING_NOTES[locale][e.id];
+        add(t("booking"),reservationNote ? `${reservationStatus} · ${reservationNote}` : reservationStatus);
+        const yearEnd=e.calendar.yearEnd;
+        if (yearEnd.status==="closed"||yearEnd.status==="unknown") add(YEAR_END_LABEL[locale],`${fmtDate(yearEnd.from)} – ${fmtDate(yearEnd.to)}${yearEnd.status==="unknown"?` · ${t("unknown")}`:""}`);
+        else add(YEAR_END_LABEL[locale],YEAR_END_VALUE[yearEnd.status]?.[locale]||t("unknown"));
+        add(t("general"),formatYen(e.prices.general));
+        const students=e.prices.students.map(({level,amount})=>`${STUDENT_LABELS[locale][level]||level}: ${formatYen(amount)}`).join(" · ");
+        add(t("student"),students||t("unknown"),!students);
+        if (e.prices.note) add(t("priceNote"),e.prices.note[locale]||e.prices.note.en);
+        const official=document.createElement("a");official.className="official";official.href=e.officialUrl;official.target="_blank";official.rel="noopener noreferrer";official.textContent=t("official");
+        card.append(details,official);
+        if(e.ticketUrl){const ticket=document.createElement("a");ticket.className="official";ticket.href=e.ticketUrl;ticket.target="_blank";ticket.rel="noopener noreferrer";ticket.textContent=t("ticket");card.append(ticket);}
+        result.append(card);
       }
     }
     dateInput.addEventListener("input",render);
     $("areas").addEventListener("change",render);
+    $("venueTypes").addEventListener("change",render);
     $("interests").addEventListener("change",render);
     $("includeClosed").addEventListener("change",render);
+    document.querySelectorAll(".language-button").forEach((button)=>button.addEventListener("click",()=>{
+      locale=button.dataset.lang;
+      applyLanguage();
+      document.querySelectorAll(".language-button").forEach((item)=>item.setAttribute("aria-pressed",String(item===button)));
+    }));
     $("reset").addEventListener("click",()=>{
-      dateInput.value="2026-12-01";
+      dateInput.value=getTokyoToday();
       document.querySelectorAll(".filters input[type=checkbox]").forEach((input)=>input.checked=false);
       render();
     });
+    function getTokyoToday() {
+      return new Intl.DateTimeFormat("en-CA",{timeZone:"Asia/Tokyo",year:"numeric",month:"2-digit",day:"2-digit"}).format(new Date());
+    }
+    $("visitDate").min="2026-11-26";
+    $("visitDate").max="2027-01-31";
+    dateInput.value=getTokyoToday();
     const scrollMark = $("scrollMark");
     const themeColor = document.querySelector('meta[name="theme-color"]');
     function updateScrollMark() {
@@ -252,8 +413,8 @@
       themeColor.content = visible ? "#000000" : "#f5f2eb";
     }
     window.addEventListener("scroll", updateScrollMark, {passive:true});
+    applyLanguage();
     updateScrollMark();
-    render();
   </script>
 </body>
 </html>
